@@ -4,3 +4,14 @@
 
 # Ignore system files
 .DS_Store
+
+# Ignore cache files
+__pycache__/
+*.pyc
+
+# Ignore virtual environment directories
+venv/
+.env
+
+# Ignore zip files
+*.zip
