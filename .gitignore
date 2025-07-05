@@ -15,3 +15,10 @@ venv/
 
 # Ignore zip files
 *.zip
+
+# Ignore environment files
+*.pwd
+
+# Ignore model files
+backend/modelpara/*.h5
+backend/modelpara/*.keras
