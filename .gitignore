@@ -22,3 +22,4 @@ venv/
 # Ignore model files
 backend/modelpara/*.h5
 backend/modelpara/*.keras
+utils/*.keras
