@@ -4,6 +4,7 @@ import numpy as np
 import json
 from PIL import Image
 from password_load import load_password
+import time
 
 classes = ["daisy", "dandelion", "roses", "sunflowers", "tulips"] # used for test
 cat_classes = ['Ragdolls', 'Singapura_cats', 'Persian_cats', 'Sphynx_cats', 'Pallas_cats']
@@ -35,7 +36,7 @@ class MQTTInferenceServer:
         self.client.username_pw_set(username, password)
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
-        self.client.connect(hostname)
+        self.client.connect(hostname, 1883, 60)
         print("Done")
 
 
@@ -68,15 +69,21 @@ class MQTTInferenceServer:
         recv_dict = json.loads(msg.payload)
         img_data = np.array(recv_dict["data"])
         result = self.classify_result(recv_dict["filename"], img_data)
+        print(recv_dict["data"])
         print("Sending results.")
         self.client.publish("Group19/IMAGE/predict", json.dumps(result))
     
     def start_server(self):
         self.client.loop_start()
-        while True:
-            pass  # Keep the server running
+        try:
+            while True:
+                time.sleep(1)  # Keep the server running
+        except KeyboardInterrupt:
+            print("Server stopped by user.")
+            self.client.loop_stop()
+            self.client.disconnect()
 
 if __name__ == "__main__":
-    server = MQTTInferenceServer(hostname="127.0.0.1", classes=cat_classes, model_path=EFFICIENTNET_FILENAME)
-    # server = MQTTInferenceServer(hostname="127.0.0.1", classes=classes, model_path=FILENAME)
+    # server = MQTTInferenceServer(hostname="192.168.43.58", classes=cat_classes, model_path=EFFICIENTNET_FILENAME)
+    server = MQTTInferenceServer(hostname="127.0.0.1", classes=classes, model_path=FILENAME)
     server.start_server()
