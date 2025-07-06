@@ -388,7 +388,8 @@ def load_image_result(image_path, json_path='result_image.json'):
     with open(json_path, 'r') as f:
         data = json.load(f)
         for item in data:
-            if item.get("image_path") == image_path:
+            # if item.get("image_path") == image_path:
+            if os.path.basename(item.get("image_path", "")) == os.path.basename(image_path):
                 return item
     return None
         
@@ -408,11 +409,16 @@ def load_and_display_image(image_path):
 
     try:
         score = item.get("score", -1.0)
-        prediction = item.get("result", "No result")
-        with dpg.group(tag="prediction_result", parent="right_panel"):
-            dpg.add_text(f"Prediction: {prediction}")
-            dpg.add_text(f"Source: {image_path}")
-            dpg.add_text(f"Score: {score:.2f}" if score >= 0 else "Score: N/A")
+        prediction = item.get("prediction", "No result")
+        if not dpg.does_item_exist("prediction_result"):
+            with dpg.group(tag="prediction_result", parent="right_panel"):
+                dpg.add_text(f"Prediction: {prediction}", tag="prediction_result_text")
+                dpg.add_text(f"Source: {image_path}", tag="prediction_source_text")
+                dpg.add_text(f"Score: {score:.2f}" if score >= 0 else "Score: N/A", tag="prediction_score_text")
+        else:
+            dpg.set_value("prediction_result_text", f"Prediction: {prediction}")
+            dpg.set_value("prediction_source_text", f"Source: {image_path}")
+            dpg.set_value("prediction_score_text", f"Score: {score:.2f}" if score >= 0 else "Score: N/A")
     except Exception as e:
         print(f"Error displaying prediction result: {e}")
         dpg.set_value("status_text", f"Error displaying prediction result: {str(e)}")
