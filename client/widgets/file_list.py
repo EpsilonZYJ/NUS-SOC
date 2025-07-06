@@ -8,6 +8,7 @@ import io
 import hashlib
 import time
 import json
+import numpy as np
 
 # def scan_files_in_directory(directory, extensions=['.jpg', '.png', '.keras', '.h5']):
 #     """扫描目录中的指定类型文件"""
@@ -448,9 +449,13 @@ def load_and_display_image(image_path):
         img.thumbnail(max_size, Image.Resampling.LANCZOS)
         
         # 转换为RGB模式（处理RGBA等其他模式）
-        if img.mode != "RGB":
-            img = img.convert("RGB")
-            
+        # if img.mode != "RGB":
+        img = img.convert("RGBA")
+        
+        img_array = np.array(img, dtype=np.float32) / 255.0
+
+        # 展平数组（DearPyGui需要一维数组）
+        img_data = img_array.flatten()
         # 获取尺寸
         width, height = img.size
         
@@ -463,20 +468,20 @@ def load_and_display_image(image_path):
         
         # 创建新纹理
         with dpg.texture_registry():
-            loaded_texture_id = dpg.add_static_texture(width, height, data)
+            loaded_texture_id = dpg.add_static_texture(width, height, img_data)
         
         # 计算图片水平和垂直居中位置
         pos_x = (max_img_width - width) // 2
         pos_y = 40 + (max_img_height - height) // 2  # 标题下方留出空间，然后垂直居中
-        
+    
         # 确保右侧已有图片显示区域
         if not dpg.does_item_exist("image_display_area"):
             with dpg.group(tag="image_display_area", parent="right_panel"):
+                dpg.add_text(f"Size: {width}x{height}", tag="image_size_text")
                 dpg.add_text("Image Preview:", color=(255, 255, 0))
                 # 创建一个child_window来容纳图片，使其在滚动区域内居中
                 with dpg.child_window(width=max_img_width, height=max_img_height, tag="image_container"):
                     dpg.add_image(loaded_texture_id, tag="displayed_image", pos=[pos_x, pos_y])
-                dpg.add_text(f"Size: {width}x{height}", tag="image_size_text")
         else:
             # 更新现有图片和尺寸信息
             dpg.configure_item("displayed_image", texture_tag=loaded_texture_id, pos=[pos_x, pos_y])

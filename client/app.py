@@ -230,7 +230,7 @@ with dpg.window(label="Dear PyGui Example", tag="Primary Window", width=-1, heig
             dpg.add_separator()
 
             # 图片文件选择区域
-            with dpg.collapsing_header(label="Image Selection", default_open=False):
+            with dpg.collapsing_header(label="Image Selection", default_open=False, show=False):
                 dpg.add_text("Select Image for Prediction:", color=(0, 255, 0))
                 
                 with dpg.group(horizontal=True):
@@ -298,7 +298,7 @@ with dpg.window(label="Dear PyGui Example", tag="Primary Window", width=-1, heig
             # dpg.add_separator()
 
             # 状态显示（保留原有功能）
-            with dpg.group():
+            with dpg.group(show=False, tag="status_group"):
                 dpg.add_text("System Status:", color=(0, 255, 0))
                 dpg.add_text("Status: Ready", tag="status_text", color=(0, 255, 0))
                 dpg.add_text("", tag="file_path_text")
