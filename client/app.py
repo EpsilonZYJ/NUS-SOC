@@ -251,6 +251,11 @@ with dpg.window(label="Dear PyGui Example", tag="Primary Window", width=-1, heig
                 
             dpg.add_separator()
             
+            # with dpg.child_window(width=400, height=-1, tag="left_panel", 
+            #                  horizontal_scrollbar=False,
+            #                  border=False):
+            #     dpg.add_text("Control Panel", color=(255, 255, 0))
+            #     dpg.add_separator() 
 
             # dpg.add_separator()
             # # 预测控制区域
@@ -359,6 +364,12 @@ if __name__ == '__main__':
     # 应用字体（如果可用）
     if "default_font" in locals() and default_font:
         dpg.bind_font(default_font)
+
+    # 创建目录选择对话框
+    create_directory_selector()
+    
+    # 初始化文件浏览器
+    refresh_file_explorer()
 
     # 创建视口 - 设置最小尺寸以防止过度缩放
     dpg.create_viewport(title="Cat Classifier - Model & Image Selection", width=1400, height=900, 

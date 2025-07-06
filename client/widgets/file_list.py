@@ -2,6 +2,9 @@ import os
 import dearpygui.dearpygui as dpg
 from system.global_data import selected_model_path, selected_image_path, available_models
 from system import client, model_dict
+import base64
+from PIL import Image
+import io
 
 # def scan_files_in_directory(directory, extensions=['.jpg', '.png', '.keras', '.h5']):
 #     """扫描目录中的指定类型文件"""
@@ -199,54 +202,253 @@ def clear_image_selection():
     dpg.set_value("image_path_display", "")
     update_prediction_button_state()
 
-# 预测功能相关回调函数
-def update_prediction_button_state():
-    global selected_model_path, selected_image_path
-    # 只有当模型和图片都选择了才能进行预测
-    can_predict = bool(selected_model_path and selected_image_path)
-    dpg.configure_item("predict_button", enabled=can_predict)
+# # 预测功能相关回调函数
+# def update_prediction_button_state():
+#     global selected_model_path, selected_image_path
+#     # 只有当模型和图片都选择了才能进行预测
+#     can_predict = bool(selected_model_path and selected_image_path)
+#     dpg.configure_item("predict_button", enabled=can_predict)
     
-    # 更新表格状态
-    if dpg.does_item_exist("table_model_status"):
-        model_status = os.path.basename(selected_model_path) if selected_model_path else "Not Selected"
-        dpg.set_value("table_model_status", model_status)
+#     # 更新表格状态
+#     if dpg.does_item_exist("table_model_status"):
+#         model_status = os.path.basename(selected_model_path) if selected_model_path else "Not Selected"
+#         dpg.set_value("table_model_status", model_status)
     
-    if dpg.does_item_exist("table_image_status"):
-        image_status = os.path.basename(selected_image_path) if selected_image_path else "Not Selected"
-        dpg.set_value("table_image_status", image_status)
+#     if dpg.does_item_exist("table_image_status"):
+#         image_status = os.path.basename(selected_image_path) if selected_image_path else "Not Selected"
+#         dpg.set_value("table_image_status", image_status)
     
-    if can_predict:
-        dpg.set_value("prediction_status", "Ready to predict")
-        dpg.configure_item("prediction_status", color=(0, 255, 0))
-    else:
-        dpg.set_value("prediction_status", "Please select both model and image")
-        dpg.configure_item("prediction_status", color=(255, 255, 0))
+#     if can_predict:
+#         dpg.set_value("prediction_status", "Ready to predict")
+#         dpg.configure_item("prediction_status", color=(0, 255, 0))
+#     else:
+#         dpg.set_value("prediction_status", "Please select both model and image")
+#         dpg.configure_item("prediction_status", color=(255, 255, 0))
 
-def start_prediction():
-    if not (selected_model_path and selected_image_path):
-        dpg.set_value("prediction_result", "Error: Please select both model and image")
+# def start_prediction():
+#     if not (selected_model_path and selected_image_path):
+#         dpg.set_value("prediction_result", "Error: Please select both model and image")
+#         return
+    
+#     # 这里应该调用实际的预测函数
+#     dpg.set_value("prediction_status", "Predicting...")
+#     dpg.configure_item("prediction_status", color=(255, 255, 0))
+    
+#     try:
+#         # 在实际应用中，这里应该调用model_image_handler中的预测函数
+#         result = f"Prediction completed!\nModel: {os.path.basename(selected_model_path)}\nImage: {os.path.basename(selected_image_path)}\n\nResult: Sample prediction result"
+#         dpg.set_value("prediction_result", result)
+#         dpg.set_value("prediction_status", "Prediction completed")
+#         dpg.configure_item("prediction_status", color=(0, 255, 0))
+        
+#         # 更新表格中的最后预测状态
+#         if dpg.does_item_exist("table_last_prediction"):
+#             dpg.set_value("table_last_prediction", "Success")
+            
+#     except Exception as e:
+#         dpg.set_value("prediction_result", f"Prediction failed: {str(e)}")
+#         dpg.set_value("prediction_status", "Prediction failed")
+#         dpg.configure_item("prediction_status", color=(255, 0, 0))
+        
+#         # 更新表格中的最后预测状态
+#         if dpg.does_item_exist("table_last_prediction"):
+#             dpg.set_value("table_last_prediction", "Failed")
+
+# 全局变量
+current_directory = "./imgs"  # 默认图片目录
+image_extensions = ['.jpg', '.jpeg', '.png', '.bmp', '.gif', '.tiff']
+loaded_texture_id = 0  # 当前加载的纹理ID
+
+def is_image_file(filename):
+    """检查文件是否为支持的图片格式"""
+    return any(filename.lower().endswith(ext) for ext in image_extensions)
+
+def scan_directory_for_images(directory):
+    """扫描指定目录及其子目录下的图片文件"""
+    result = {"directories": {}, "files": []}
+    try:
+        if os.path.exists(directory):
+            for item in os.listdir(directory):
+                full_path = os.path.join(directory, item)
+                if os.path.isdir(full_path):
+                    # 递归扫描子目录
+                    result["directories"][item] = scan_directory_for_images(full_path)
+                elif os.path.isfile(full_path) and is_image_file(item):
+                    # 添加图片文件
+                    result["files"].append(item)
+        
+        # 排序文件和目录名
+        result["files"].sort()
+    except Exception as e:
+        print(f"Error scanning directory {directory}: {e}")
+    
+    return result
+
+def build_file_tree(directory_data, parent="file_tree", directory_path=""):
+    """构建文件树界面"""
+    # 首先添加目录
+    for dir_name, content in directory_data["directories"].items():
+        dir_path = os.path.join(directory_path, dir_name)
+        dir_tag = f"dir_{dir_path}".replace('/', '_').replace('\\', '_')
+        
+        # 添加目录节点
+        with dpg.tree_node(label=dir_name, tag=dir_tag, parent=parent):
+            # 递归添加子目录和文件
+            build_file_tree(content, dir_tag, dir_path)
+    
+    # 然后添加文件
+    for file_name in directory_data["files"]:
+        file_path = os.path.join(directory_path, file_name)
+        full_path = os.path.join(current_directory, file_path)
+        
+        # 添加文件节点，使用lambda捕获当前文件路径
+        dpg.add_button(
+            label=file_name,
+            callback=lambda s, a, u: load_and_display_image(u),
+            user_data=full_path,
+            width=-1,
+            indent=20,
+            parent=parent
+        )
+
+def refresh_file_explorer():
+    """刷新文件浏览器"""
+    global current_directory
+    
+    # 清除现有树结构
+    if dpg.does_item_exist("file_explorer_section"):
+        dpg.delete_item("file_explorer_section")
+    
+    # 创建新的文件树结构
+    with dpg.collapsing_header(label="File Explorer", default_open=True, tag="file_explorer_section", parent="left_panel"):
+        dpg.add_text("Images Directory:", color=(0, 255, 0))
+        
+        # 目录输入和浏览按钮
+        with dpg.group(horizontal=True):
+            dpg.add_input_text(
+                tag="explorer_directory_input",
+                default_value=current_directory,
+                width=290
+            )
+            dpg.add_button(
+                label="Browse",
+                callback=lambda: dpg.show_item("directory_selector"),
+                width=90
+            )
+        
+        # 刷新按钮
+        with dpg.group(horizontal=True):
+            dpg.add_button(
+                label="Refresh",
+                callback=refresh_file_explorer_with_path,
+                width=190
+            )
+            dpg.add_text(f"", tag="file_count_text", color=(150, 150, 150))
+        
+        dpg.add_separator()
+        
+        # 创建文件树
+        directory_data = scan_directory_for_images(current_directory)
+        total_files = count_files_in_data(directory_data)
+        dpg.set_value("file_count_text", f"Found {total_files} image(s)")
+        
+        with dpg.tree_node(label="Images", default_open=True, tag="file_tree"):
+            build_file_tree(directory_data)
+
+def count_files_in_data(directory_data):
+    """计算目录数据中的文件总数"""
+    count = len(directory_data["files"])
+    for _, subdir_data in directory_data["directories"].items():
+        count += count_files_in_data(subdir_data)
+    return count
+
+def refresh_file_explorer_with_path():
+    """从输入框获取路径并刷新文件浏览器"""
+    global current_directory
+    new_dir = dpg.get_value("explorer_directory_input")
+    if os.path.exists(new_dir) and os.path.isdir(new_dir):
+        current_directory = new_dir
+        refresh_file_explorer()
+    else:
+        dpg.set_value("status_text", f"Invalid directory: {new_dir}")
+
+def load_and_display_image(image_path):
+    """加载并显示图片"""
+    global selected_image_path, loaded_texture_id
+    
+    if not os.path.exists(image_path):
+        dpg.set_value("status_text", f"Error: Image file not found: {image_path}")
         return
     
-    # 这里应该调用实际的预测函数
-    dpg.set_value("prediction_status", "Predicting...")
-    dpg.configure_item("prediction_status", color=(255, 255, 0))
-    
     try:
-        # 在实际应用中，这里应该调用model_image_handler中的预测函数
-        result = f"Prediction completed!\nModel: {os.path.basename(selected_model_path)}\nImage: {os.path.basename(selected_image_path)}\n\nResult: Sample prediction result"
-        dpg.set_value("prediction_result", result)
-        dpg.set_value("prediction_status", "Prediction completed")
-        dpg.configure_item("prediction_status", color=(0, 255, 0))
+        # 更新选定的图片路径
+        selected_image_path = image_path
+        filename = os.path.basename(image_path)
+        dpg.set_value("image_status_text", f"Selected Image: {filename}")
+        dpg.set_value("image_path_display", f"Path: {image_path}")
+        dpg.set_value("status_text", f"Loaded image: {filename}")
         
-        # 更新表格中的最后预测状态
-        if dpg.does_item_exist("table_last_prediction"):
-            dpg.set_value("table_last_prediction", "Success")
+        # 加载图片并创建纹理
+        img = Image.open(image_path)
+        
+        # 调整图片大小以适应显示区域，保持纵横比
+        max_size = (800, 600)  # 最大显示尺寸
+        img.thumbnail(max_size, Image.Resampling.LANCZOS)
+        
+        # 转换为RGB模式（处理RGBA等其他模式）
+        if img.mode != "RGB":
+            img = img.convert("RGB")
             
-    except Exception as e:
-        dpg.set_value("prediction_result", f"Prediction failed: {str(e)}")
-        dpg.set_value("prediction_status", "Prediction failed")
-        dpg.configure_item("prediction_status", color=(255, 0, 0))
+        # 获取尺寸
+        width, height = img.size
         
-        # 更新表格中的最后预测状态
-        if dpg.does_item_exist("table_last_prediction"):
-            dpg.set_value("table_last_prediction", "Failed")
+        # 将图片转换为数据
+        data = bytearray(img.tobytes())
+        
+        # 如果已有纹理，先删除
+        if loaded_texture_id != 0 and dpg.does_item_exist(loaded_texture_id):
+            dpg.delete_item(loaded_texture_id)
+        
+        # 创建新纹理
+        with dpg.texture_registry():
+            loaded_texture_id = dpg.add_static_texture(width, height, data)
+        
+        # 确保右侧已有图片显示区域
+        if not dpg.does_item_exist("image_display_area"):
+            with dpg.group(tag="image_display_area", parent="right_panel"):
+                dpg.add_text("Image Preview:", color=(255, 255, 0))
+                dpg.add_image(loaded_texture_id, tag="displayed_image")
+                dpg.add_text(f"Size: {width}x{height}", tag="image_size_text")
+        else:
+            # 更新现有图片和尺寸信息
+            dpg.configure_item("displayed_image", texture_tag=loaded_texture_id)
+            dpg.set_value("image_size_text", f"Size: {width}x{height}")
+        
+        # 更新选中的图片（用于预测）
+        if "update_prediction_button_state" in globals():
+            update_prediction_button_state()
+        
+    except Exception as e:
+        dpg.set_value("status_text", f"Error loading image: {str(e)}")
+        print(f"Error loading image {image_path}: {e}")
+
+# 目录选择对话框回调
+def directory_selector_callback(sender, app_data):
+    if app_data["file_path_name"]:
+        # 对于目录选择器，我们使用目录路径
+        directory = app_data["file_path_name"]
+        if os.path.isdir(directory):
+            dpg.set_value("explorer_directory_input", directory)
+            refresh_file_explorer_with_path()
+
+# 创建目录选择对话框
+def create_directory_selector():
+    with dpg.file_dialog(
+        directory_selector=True,
+        show=False,
+        callback=directory_selector_callback,
+        tag="directory_selector",
+        width=700,
+        height=400,
+    ):
+        dpg.add_file_extension("", color=(255, 255, 255, 255))
