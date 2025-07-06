@@ -170,6 +170,7 @@ def model_combo_callback(sender, app_data, user_data):
     else:
         dpg.set_value("model_status_text", "No valid model selected")
         dpg.set_value("model_path_display", "")
+        
 
 def refresh_models_callback():
     models = initialize_models()

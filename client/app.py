@@ -230,7 +230,7 @@ with dpg.window(label="Dear PyGui Example", tag="Primary Window", width=-1, heig
             dpg.add_separator()
 
             # 图片文件选择区域
-            with dpg.collapsing_header(label="Image Selection", default_open=True):
+            with dpg.collapsing_header(label="Image Selection", default_open=False):
                 dpg.add_text("Select Image for Prediction:", color=(0, 255, 0))
                 
                 with dpg.group(horizontal=True):
@@ -250,22 +250,24 @@ with dpg.window(label="Dear PyGui Example", tag="Primary Window", width=-1, heig
                 dpg.add_text("", tag="image_path_display", color=(150, 150, 150))
                 
             dpg.add_separator()
+            
 
-            # 预测控制区域
-            with dpg.collapsing_header(label="Prediction Control", default_open=True):
-                dpg.add_text("Prediction Status:", color=(255, 200, 200))
-                dpg.add_text("Please select both model and image", tag="prediction_status", color=(255, 255, 0))
+            # dpg.add_separator()
+            # # 预测控制区域
+            # with dpg.collapsing_header(label="Prediction Control", default_open=True):
+            #     dpg.add_text("Prediction Status:", color=(255, 200, 200))
+            #     dpg.add_text("Please select both model and image", tag="prediction_status", color=(255, 255, 0))
                 
-                dpg.add_button(
-                    label="Start Prediction",
-                    callback=start_prediction,
-                    tag="predict_button",
-                    width=200,
-                    height=40,
-                    enabled=False
-                )
+            #     dpg.add_button(
+            #         label="Start Prediction",
+            #         callback=start_prediction,
+            #         tag="predict_button",
+            #         width=200,
+            #         height=40,
+            #         enabled=False
+            #     )
                 
-            dpg.add_separator()
+            # dpg.add_separator()
 
 
     
@@ -348,7 +350,6 @@ with dpg.window(label="Dear PyGui Example", tag="Primary Window", width=-1, heig
                         dpg.add_text("None", tag="table_last_prediction")
 
 if __name__ == '__main__':
-
     # 设置主窗口
     dpg.set_primary_window("Primary Window", True)
 
