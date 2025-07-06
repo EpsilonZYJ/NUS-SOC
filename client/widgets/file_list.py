@@ -7,6 +7,7 @@ from PIL import Image
 import io
 import hashlib
 import time
+import json
 
 # def scan_files_in_directory(directory, extensions=['.jpg', '.png', '.keras', '.h5']):
 #     """扫描目录中的指定类型文件"""
@@ -257,7 +258,7 @@ def clear_image_selection():
 #             dpg.set_value("table_last_prediction", "Failed")
 
 # 全局变量
-current_directory = "./imgs"  # 默认图片目录
+current_directory = "results"  # 默认图片目录
 image_extensions = ['.jpg', '.jpeg', '.png', '.bmp', '.gif', '.tiff']
 loaded_texture_id = 0  # 当前加载的纹理ID
 last_directory_state = ""  # 上次目录状态的哈希值
@@ -383,6 +384,15 @@ def get_right_panel_size():
         return dpg.get_item_rect_size("right_panel")
     return (800, 600)  # 默认大小
 
+def load_image_result(image_path, json_path='result_image.json'):
+    with open(json_path, 'r') as f:
+        data = json.load(f)
+        for item in data:
+            if item.get("image_path") == image_path:
+                return item
+    return None
+        
+
 def load_and_display_image(image_path):
     """加载并显示图片"""
     global selected_image_path, loaded_texture_id
@@ -391,6 +401,22 @@ def load_and_display_image(image_path):
         dpg.set_value("status_text", f"Error: Image file not found: {image_path}")
         return
     
+    print(f"Loading image: {image_path}")
+    item = load_image_result(image_path)
+    if item is None:
+        dpg.set_value("status_text", f"Image info loaded with result: {item}")    
+
+    try:
+        score = item.get("score", -1.0)
+        prediction = item.get("result", "No result")
+        with dpg.group(tag="prediction_result", parent="right_panel"):
+            dpg.add_text(f"Prediction: {prediction}")
+            dpg.add_text(f"Source: {image_path}")
+            dpg.add_text(f"Score: {score:.2f}" if score >= 0 else "Score: N/A")
+    except Exception as e:
+        print(f"Error displaying prediction result: {e}")
+        dpg.set_value("status_text", f"Error displaying prediction result: {str(e)}")
+
     try:
         # 更新选定的图片路径
         selected_image_path = image_path
@@ -399,6 +425,8 @@ def load_and_display_image(image_path):
         dpg.set_value("image_path_display", f"Path: {image_path}")
         dpg.set_value("status_text", f"Loaded image: {filename}")
         
+        print(image_path)
+
         # 获取右侧面板尺寸
         panel_width, panel_height = get_right_panel_size()
         
@@ -455,6 +483,7 @@ def load_and_display_image(image_path):
     except Exception as e:
         dpg.set_value("status_text", f"Error loading image: {str(e)}")
         print(f"Error loading image {image_path}: {e}")
+    
 
 # 目录选择对话框回调
 def directory_selector_callback(sender, app_data):
