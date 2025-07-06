@@ -237,12 +237,13 @@ with dpg.window(label="Dear PyGui Example", tag="Primary Window", width=-1, heig
                     dpg.add_button(
                         label="Browse Images",
                         callback=lambda: dpg.show_item("image_file_dialog"),
-                        width=120
+                        width=190,
+                        indent=5
                     )
                     dpg.add_button(
                         label="Clear Image",
                         callback=clear_image_selection,
-                        width=120
+                        width=190
                     )
                 
                 dpg.add_text("No image selected", tag="image_status_text", color=(255, 255, 0))
@@ -266,72 +267,8 @@ with dpg.window(label="Dear PyGui Example", tag="Primary Window", width=-1, heig
                 
             dpg.add_separator()
 
-            # 基础控件（保留原有功能）
-            with dpg.collapsing_header(label="Basic Controls", default_open=False):
-                dpg.add_button(
-                    label="Primary Button",
-                    callback=button_callback,
-                    user_data="Primary",
-                    width=200,
-                )
-                dpg.add_button(
-                    label="Secondary Button",
-                    callback=button_callback,
-                    user_data="Secondary",
-                    width=200,
-                )
 
-                dpg.add_slider_float(
-                    label="Slider",
-                    min_value=0.0,
-                    max_value=100.0,
-                    default_value=50.0,
-                    callback=slider_callback,
-                    tag="main_slider",
-                    width=200,
-                )
-                dpg.add_text("Slider Value: 50.00", tag="slider_value_text")
-
-                dpg.add_input_text(
-                    label="Input",
-                    callback=input_callback,
-                    hint="Type something...",
-                    width=200,
-                )
-                dpg.add_text("You typed: ", tag="input_display")
-
-            # 选择控件
-            with dpg.collapsing_header(label="Selection Controls"):
-                dpg.add_checkbox(label="Enable Feature A")
-                dpg.add_checkbox(label="Enable Feature B", default_value=True)
-
-                dpg.add_radio_button(
-                    ["Option 1", "Option 2", "Option 3"],
-                    horizontal=False,
-                    tag="radio_group",
-                )
-
-                dpg.add_combo(
-                    ["Item 1", "Item 2", "Item 3", "Item 4"],
-                    label="Combo Box",
-                    default_value="Item 1",
-                    width=200,
-                )
-
-            # 颜色和日期选择器
-            with dpg.collapsing_header(label="Advanced Controls"):
-                dpg.add_color_picker(
-                    label="Color Picker",
-                    default_value=(255, 0, 0, 255),
-                    width=200,
-                    height=200,
-                )
-
-                dpg.add_date_picker(
-                    label="Date Picker",
-                    default_value={"month_day": 14, "year": 2024, "month": 7},
-                )
-
+    
         # 右侧内容区域
         with dpg.child_window(width=-1, height=-1, tag="right_panel",
                              horizontal_scrollbar=False,

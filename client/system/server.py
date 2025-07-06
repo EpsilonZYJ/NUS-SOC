@@ -7,6 +7,8 @@ from password_load import load_password
 import time
 import matplotlib.pyplot as plt
 import os
+import threading
+from queue import Queue
 
 classes = ["daisy", "dandelion", "roses", "sunflowers", "tulips"] # used for test
 cat_classes = ['pallas', 'persian', 'ragdoll', 'singapura', 'sphynx']  # used for cat classification
@@ -20,19 +22,19 @@ model_dict = {
         "classes": cat_classes
     },
     "xception": {
-        "path": "modelpara/cat_classifier_xception.h5",
+        "path": "model/cat_classifier_xception.h5",
         "input_size": 299,
         "scale": 255.0,  # scale factor for Xception
         "classes": cat_classes
     },
     "test": {
-        "path": "flowers.keras",
+        "path": "model/flowers.keras",
         "input_size": 224,
         "scale": 1.0,  # scale factor for test model
         "classes": classes
     },
     "insection": {
-        "path": "cats_insection.keras",
+        "path": "model/cats_insection.keras",
         "input_size": 224,
         "scale": 1.0,  # scale factor for insection model
         "classes": cat_classes
@@ -74,6 +76,12 @@ class MQTTInferenceServer:
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
         self.client.connect(hostname, 1883, 60)
+
+        # 添加图像保存队列和线程
+        self.image_queue = Queue()
+        self.plot_thread = threading.Thread(target=self._plot_worker, daemon=True)
+        self.plot_thread.start()
+
         print("Done")
     
     # def load_image_for_models(self, img_data):
@@ -170,7 +178,78 @@ class MQTTInferenceServer:
         print("Sending results.")
         self.client.publish("Group19/IMAGE/predict", json.dumps(result))
     
-    def plot_image(self, img_data, recv_dict, result):
+    # def plot_image(self, img_data, recv_dict, result):
+    #     if img_data.ndim == 4 and img_data.shape[0] == 1:
+    #         img_display = img_data[0]
+    #     else:
+    #         img_display = img_data
+
+    #     if img_display.max() <= 1.0:
+    #         img_display = (img_display * 255).astype(np.uint8)
+    #     else:
+    #         img_display = img_display.astype(np.uint8)
+    #     # plot the image
+    #     plt.figure(figsize=(8, 6))
+    #     plt.imshow(img_display)
+    #     plt.title(f"File: {recv_dict['filename']}\nPrediction: {result['prediction']} (Score: {result['score']:.3f})\nModel: {self.model_name}")
+    #     plt.axis('off')
+    #     # Create results directory if it doesn't exist
+    #     results_dir = "results"
+    #     if not os.path.exists(results_dir):
+    #         os.makedirs(results_dir)
+    #     # Save the plot to the results directory
+    #     # output_filename = f"result_{recv_dict['filename'].split('/')[-1]}"
+    #     output_filename = f"{results_dir}/result_{recv_dict['filename'].split('/')[-1]}"
+    #     plt.savefig(output_filename, dpi=150, bbox_inches='tight')
+    #     plt.close() 
+    #     print(f"Result saved to {output_filename}")
+
+    #     image_info = {
+    #         "filename": recv_dict["filename"],
+    #         "prediction": result["prediction"],
+    #         "score": result["score"],
+    #         "index": result["index"],
+    #         "image_path": output_filename
+    #     }
+    #     # Save the image information to a JSON file
+    #     try:
+    #         if os.path.exists(IMAGE_FILEPATH):
+    #             with open(IMAGE_FILEPATH, 'r', encoding='utf-8') as f:
+    #                 data = json.load(f)
+    #         else:
+    #             data = []
+    #     except (json.JSONDecodeError, FileNotFoundError):
+    #         data = []
+
+    #     data.append(image_info)
+    #     with open(IMAGE_FILEPATH, 'w', encoding='utf-8') as f:
+    #         json.dump(data, f, indent=4, ensure_ascii=False)
+    #         f.write('\n')
+
+    def _plot_worker(self):
+        """
+        在单独线程中处理图像绘制，避免GUI线程问题
+        """
+        import matplotlib
+        matplotlib.use('Agg')  # 确保使用非交互式后端
+        import matplotlib.pyplot as plt
+        
+        while True:
+            try:
+                item = self.image_queue.get()
+                if item is None:  # 退出信号
+                    break
+                
+                img_data, recv_dict, result = item
+                self._plot_image_worker(img_data, recv_dict, result, plt)
+                self.image_queue.task_done()
+            except Exception as e:
+                print(f"Error in plot worker: {e}")
+    
+    def _plot_image_worker(self, img_data, recv_dict, result, plt):
+        """
+        实际的图像绘制工作
+        """
         if img_data.ndim == 4 and img_data.shape[0] == 1:
             img_display = img_data[0]
         else:
@@ -180,22 +259,22 @@ class MQTTInferenceServer:
             img_display = (img_display * 255).astype(np.uint8)
         else:
             img_display = img_display.astype(np.uint8)
-        # plot the image
+
         plt.figure(figsize=(8, 6))
         plt.imshow(img_display)
         plt.title(f"File: {recv_dict['filename']}\nPrediction: {result['prediction']} (Score: {result['score']:.3f})\nModel: {self.model_name}")
         plt.axis('off')
-        # Create results directory if it doesn't exist
+        
         results_dir = "results"
         if not os.path.exists(results_dir):
             os.makedirs(results_dir)
-        # Save the plot to the results directory
-        # output_filename = f"result_{recv_dict['filename'].split('/')[-1]}"
+        
         output_filename = f"{results_dir}/result_{recv_dict['filename'].split('/')[-1]}"
         plt.savefig(output_filename, dpi=150, bbox_inches='tight')
-        plt.close() 
+        plt.close()
         print(f"Result saved to {output_filename}")
 
+        # 保存图像信息
         image_info = {
             "filename": recv_dict["filename"],
             "prediction": result["prediction"],
@@ -203,7 +282,12 @@ class MQTTInferenceServer:
             "index": result["index"],
             "image_path": output_filename
         }
-        # Save the image information to a JSON file
+        self._save_image_info(image_info)
+
+    def _save_image_info(self, image_info):
+        """
+        保存图像信息到JSON文件
+        """
         try:
             if os.path.exists(IMAGE_FILEPATH):
                 with open(IMAGE_FILEPATH, 'r', encoding='utf-8') as f:
@@ -214,9 +298,16 @@ class MQTTInferenceServer:
             data = []
 
         data.append(image_info)
+        
         with open(IMAGE_FILEPATH, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=4, ensure_ascii=False)
             f.write('\n')
+
+    def plot_image(self, img_data, recv_dict, result):
+        """
+        将绘制任务添加到队列
+        """
+        self.image_queue.put((img_data, recv_dict, result))
 
     def load_image_info(self):
         # path of the image information JSON file

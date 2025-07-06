@@ -15,4 +15,4 @@ file_list = []
 
 selected_model_path = ""
 selected_image_path = ""
-available_models = []
+available_models = ["efficientnet", "xception", "insection", "test"]

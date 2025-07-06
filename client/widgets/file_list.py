@@ -1,6 +1,7 @@
 import os
 import dearpygui.dearpygui as dpg
 from system.global_data import selected_model_path, selected_image_path, available_models
+from system import client, model_dict
 
 # def scan_files_in_directory(directory, extensions=['.jpg', '.png', '.keras', '.h5']):
 #     """扫描目录中的指定类型文件"""
@@ -144,11 +145,15 @@ from system.global_data import selected_model_path, selected_image_path, availab
 def initialize_models():
     global available_models
     model_dir = "./model"
-    if os.path.exists(model_dir):
-        models = [f for f in os.listdir(model_dir) if f.endswith(('.h5', '.keras', '.model'))]
-        available_models = models if models else ["No models found"]
-    else:
+    if not os.path.exists(model_dir):
         available_models = ["Model directory not found"]
+        return available_models
+    available_models_copy = available_models.copy()
+    for md in available_models_copy:
+        if not os.path.exists(model_dict[md]):
+            available_models.remove(md)
+    if available_models == []:
+        available_models = ["No models found"]
     return available_models
 
 
@@ -156,11 +161,12 @@ def initialize_models():
 def model_combo_callback(sender, app_data, user_data):
     global selected_model_path
     if app_data and app_data != "No models found" and app_data != "Model directory not found":
-        selected_model_path = os.path.join("./model", app_data)
+        selected_model_path = model_dict.get(app_data, "")
         dpg.set_value("model_status_text", f"Selected Model: {app_data}")
         dpg.set_value("model_path_display", f"Path: {selected_model_path}")
+        client.load_model(selected_model_path)  # 加载模型
         # 检查是否可以开始预测
-        update_prediction_button_state()
+        # update_prediction_button_state()
     else:
         dpg.set_value("model_status_text", "No valid model selected")
         dpg.set_value("model_path_display", "")
