@@ -5,6 +5,8 @@ from system import client, model_dict
 import base64
 from PIL import Image
 import io
+import hashlib
+import time
 
 # def scan_files_in_directory(directory, extensions=['.jpg', '.png', '.keras', '.h5']):
 #     """扫描目录中的指定类型文件"""
@@ -258,6 +260,9 @@ def clear_image_selection():
 current_directory = "./imgs"  # 默认图片目录
 image_extensions = ['.jpg', '.jpeg', '.png', '.bmp', '.gif', '.tiff']
 loaded_texture_id = 0  # 当前加载的纹理ID
+last_directory_state = ""  # 上次目录状态的哈希值
+refresh_interval = 1.0  # 检查间隔（秒）
+auto_refresh_enabled = True  # 是否启用自动刷新
 
 def is_image_file(filename):
     """检查文件是否为支持的图片格式"""
@@ -372,6 +377,12 @@ def refresh_file_explorer_with_path():
     else:
         dpg.set_value("status_text", f"Invalid directory: {new_dir}")
 
+def get_right_panel_size():
+    """获取右侧面板的尺寸"""
+    if dpg.does_item_exist("right_panel"):
+        return dpg.get_item_rect_size("right_panel")
+    return (800, 600)  # 默认大小
+
 def load_and_display_image(image_path):
     """加载并显示图片"""
     global selected_image_path, loaded_texture_id
@@ -388,11 +399,18 @@ def load_and_display_image(image_path):
         dpg.set_value("image_path_display", f"Path: {image_path}")
         dpg.set_value("status_text", f"Loaded image: {filename}")
         
+        # 获取右侧面板尺寸
+        panel_width, panel_height = get_right_panel_size()
+        
+        # 为图片预览区域留出空间（减去标题和边距）
+        max_img_width = panel_width - 40  # 左右边距
+        max_img_height = panel_height - 100  # 上下边距及其他控件
+        
         # 加载图片并创建纹理
         img = Image.open(image_path)
         
         # 调整图片大小以适应显示区域，保持纵横比
-        max_size = (800, 600)  # 最大显示尺寸
+        max_size = (max_img_width, max_img_height)  # 最大显示尺寸
         img.thumbnail(max_size, Image.Resampling.LANCZOS)
         
         # 转换为RGB模式（处理RGBA等其他模式）
@@ -413,15 +431,21 @@ def load_and_display_image(image_path):
         with dpg.texture_registry():
             loaded_texture_id = dpg.add_static_texture(width, height, data)
         
+        # 计算图片水平和垂直居中位置
+        pos_x = (max_img_width - width) // 2
+        pos_y = 40 + (max_img_height - height) // 2  # 标题下方留出空间，然后垂直居中
+        
         # 确保右侧已有图片显示区域
         if not dpg.does_item_exist("image_display_area"):
             with dpg.group(tag="image_display_area", parent="right_panel"):
                 dpg.add_text("Image Preview:", color=(255, 255, 0))
-                dpg.add_image(loaded_texture_id, tag="displayed_image")
+                # 创建一个child_window来容纳图片，使其在滚动区域内居中
+                with dpg.child_window(width=max_img_width, height=max_img_height, tag="image_container"):
+                    dpg.add_image(loaded_texture_id, tag="displayed_image", pos=[pos_x, pos_y])
                 dpg.add_text(f"Size: {width}x{height}", tag="image_size_text")
         else:
             # 更新现有图片和尺寸信息
-            dpg.configure_item("displayed_image", texture_tag=loaded_texture_id)
+            dpg.configure_item("displayed_image", texture_tag=loaded_texture_id, pos=[pos_x, pos_y])
             dpg.set_value("image_size_text", f"Size: {width}x{height}")
         
         # 更新选中的图片（用于预测）
@@ -452,3 +476,134 @@ def create_directory_selector():
         height=400,
     ):
         dpg.add_file_extension("", color=(255, 255, 255, 255))
+
+def calculate_directory_hash(directory):
+    """计算目录状态的哈希值，用于检测变化"""
+    if not os.path.exists(directory):
+        return ""
+    
+    files_info = []
+    try:
+        for root, dirs, files in os.walk(directory):
+            for file in files:
+                if is_image_file(file):
+                    full_path = os.path.join(root, file)
+                    # 获取文件修改时间和大小
+                    stat_info = os.stat(full_path)
+                    files_info.append((full_path, stat_info.st_mtime, stat_info.st_size))
+    except Exception as e:
+        print(f"Error scanning directory for hash: {e}")
+    
+    # 排序以确保一致性
+    files_info.sort()
+    
+    # 创建表示目录状态的字符串
+    dir_state = str(files_info)
+    
+    # 计算哈希值
+    return hashlib.md5(dir_state.encode()).hexdigest()
+
+def check_directory_changes():
+    """检查目录是否有变化，如果有则刷新文件浏览器"""
+    global current_directory, last_directory_state
+    
+    if not auto_refresh_enabled:
+        return
+    
+    # 计算当前目录状态的哈希值
+    current_hash = calculate_directory_hash(current_directory)
+    
+    # 如果哈希值与上次不同，则目录有变化
+    if current_hash != last_directory_state and last_directory_state != "":
+        print(f"Directory changes detected in {current_directory}, refreshing...")
+        refresh_file_explorer()
+    
+    # 更新哈希值
+    last_directory_state = current_hash
+
+def setup_auto_refresh():
+    """设置自动刷新定时器"""
+    global last_directory_state, current_directory, refresh_interval
+    
+    # 计算初始目录哈希值
+    last_directory_state = calculate_directory_hash(current_directory)
+    
+    # 使用DearPyGui的帧计数回调实现定期检查
+    def frame_callback(sender, data):
+        # 检查目录变化
+        if auto_refresh_enabled:
+            check_directory_changes()
+        
+        # 设置下一次检查（每60帧一次，约1秒）
+        frames_until_next_check = int(refresh_interval * 60)
+        dpg.set_frame_callback(dpg.get_frame_count() + frames_until_next_check, frame_callback)
+    
+    # 设置初始回调，延迟60帧后开始（约1秒）
+    dpg.set_frame_callback(dpg.get_frame_count() + 60, frame_callback)
+
+def toggle_auto_refresh(sender, app_data, user_data):
+    """切换自动刷新功能的开关"""
+    global auto_refresh_enabled
+    auto_refresh_enabled = not auto_refresh_enabled
+    
+    # 更新按钮文本
+    if auto_refresh_enabled:
+        dpg.configure_item("auto_refresh_button", label="Auto-refresh: ON")
+        dpg.set_value("status_text", f"Auto-refresh enabled (every {refresh_interval:.1f}s)")
+    else:
+        dpg.configure_item("auto_refresh_button", label="Auto-refresh: OFF")
+        dpg.set_value("status_text", "Auto-refresh disabled")
+
+# 修改refresh_file_explorer函数，加入自动刷新按钮
+def refresh_file_explorer():
+    """刷新文件浏览器"""
+    global current_directory, last_directory_state
+    
+    # 清除现有树结构
+    if dpg.does_item_exist("file_explorer_section"):
+        dpg.delete_item("file_explorer_section")
+    
+    # 创建新的文件树结构
+    with dpg.collapsing_header(label="Image Explorer", default_open=False, tag="file_explorer_section", parent="left_panel"):
+        dpg.add_text("Images Directory:", color=(0, 255, 0))
+        
+        # 目录输入和浏览按钮
+        with dpg.group(horizontal=True):
+            dpg.add_input_text(
+                tag="explorer_directory_input",
+                default_value=current_directory,
+                width=290
+            )
+            dpg.add_button(
+                label="Browse",
+                callback=lambda: dpg.show_item("directory_selector"),
+                width=90
+            )
+        
+        # 刷新和自动刷新按钮
+        with dpg.group(horizontal=True):
+            dpg.add_button(
+                label="Refresh",
+                callback=refresh_file_explorer_with_path,
+                width=190
+            )
+            dpg.add_button(
+                label="Auto-refresh: ON" if auto_refresh_enabled else "Auto-refresh: OFF",
+                callback=toggle_auto_refresh,
+                width=190,
+                tag="auto_refresh_button"
+            )
+        
+        dpg.add_text(f"", tag="file_count_text", color=(150, 150, 150))
+        dpg.add_separator()
+        
+        # 创建文件树
+        directory_data = scan_directory_for_images(current_directory)
+        total_files = count_files_in_data(directory_data)
+        dpg.set_value("file_count_text", f"Found {total_files} image(s)")
+        
+        with dpg.tree_node(label="Images", default_open=True, tag="file_tree"):
+            build_file_tree(directory_data)
+    
+    # 更新当前目录状态的哈希值
+    last_directory_state = calculate_directory_hash(current_directory)

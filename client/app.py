@@ -280,22 +280,22 @@ with dpg.window(label="Dear PyGui Example", tag="Primary Window", width=-1, heig
         with dpg.child_window(width=-1, height=-1, tag="right_panel",
                              horizontal_scrollbar=False,
                              border=False):
-            dpg.add_text("Prediction Results", color=(0, 255, 255))
-            dpg.add_separator()
+            # dpg.add_text("Prediction Results", color=(0, 255, 255))
+            # dpg.add_separator()
 
-            # 预测结果显示区域
-            with dpg.group():
-                dpg.add_text("Prediction Output:", color=(255, 255, 0))
-                dpg.add_input_text(
-                    tag="prediction_result",
-                    multiline=True,
-                    readonly=True,
-                    width=-1,
-                    height=200,
-                    default_value="No prediction yet. Please select a model and image, then click 'Start Prediction'."
-                )
+            # # 预测结果显示区域
+            # with dpg.group():
+            #     dpg.add_text("Prediction Output:", color=(255, 255, 0))
+            #     dpg.add_input_text(
+            #         tag="prediction_result",
+            #         multiline=True,
+            #         readonly=True,
+            #         width=-1,
+            #         height=200,
+            #         default_value="No prediction yet. Please select a model and image, then click 'Start Prediction'."
+            #     )
 
-            dpg.add_separator()
+            # dpg.add_separator()
 
             # 状态显示（保留原有功能）
             with dpg.group():
@@ -306,53 +306,53 @@ with dpg.window(label="Dear PyGui Example", tag="Primary Window", width=-1, heig
             dpg.add_separator()
 
             # 图表区域（保留原有功能）
-            with dpg.group():
-                dpg.add_text("Real-time Plot", color=(255, 255, 0))
+            # with dpg.group():
+            #     dpg.add_text("Real-time Plot", color=(255, 255, 0))
 
-                with dpg.group(horizontal=True):
-                    dpg.add_button(label="Add Data Point", callback=add_random_data)
-                    dpg.add_button(label="Clear Plot", callback=clear_plot)
+            #     with dpg.group(horizontal=True):
+            #         dpg.add_button(label="Add Data Point", callback=add_random_data)
+            #         dpg.add_button(label="Clear Plot", callback=clear_plot)
 
-                with dpg.plot(label="Sine Wave with Noise", height=300, width=-1):
-                    dpg.add_plot_legend()
-                    dpg.add_plot_axis(dpg.mvXAxis, label="X Axis")
-                    dpg.add_plot_axis(dpg.mvYAxis, label="Y Axis", tag="y_axis")
+            #     with dpg.plot(label="Sine Wave with Noise", height=300, width=-1):
+            #         dpg.add_plot_legend()
+            #         dpg.add_plot_axis(dpg.mvXAxis, label="X Axis")
+            #         dpg.add_plot_axis(dpg.mvYAxis, label="Y Axis", tag="y_axis")
 
-                    # dpg.add_line_series(
-                    #     plot_data_x,
-                    #     plot_data_y,
-                    #     label="Sine Wave",
-                    #     parent="y_axis",
-                    #     tag="plot_series",
-                    # )
+            #         # dpg.add_line_series(
+            #         #     plot_data_x,
+            #         #     plot_data_y,
+            #         #     label="Sine Wave",
+            #         #     parent="y_axis",
+            #         #     tag="plot_series",
+            #         # )
 
-            dpg.add_separator()
+            # dpg.add_separator()
 
-            # 数据表格（简化版）
-            with dpg.group():
-                dpg.add_text("System Information", color=(255, 255, 0))
+            # # 数据表格（简化版）
+            # with dpg.group():
+            #     dpg.add_text("System Information", color=(255, 255, 0))
 
-                with dpg.table(
-                    header_row=True,
-                    borders_innerH=True,
-                    borders_outerH=True,
-                    borders_innerV=True,
-                    borders_outerV=True,
-                ):
-                    dpg.add_table_column(label="Property")
-                    dpg.add_table_column(label="Value")
+            #     with dpg.table(
+            #         header_row=True,
+            #         borders_innerH=True,
+            #         borders_outerH=True,
+            #         borders_innerV=True,
+            #         borders_outerV=True,
+            #     ):
+            #         dpg.add_table_column(label="Property")
+            #         dpg.add_table_column(label="Value")
 
-                    with dpg.table_row():
-                        dpg.add_text("Model Status")
-                        dpg.add_text("Not Selected", tag="table_model_status")
+            #         with dpg.table_row():
+            #             dpg.add_text("Model Status")
+            #             dpg.add_text("Not Selected", tag="table_model_status")
                     
-                    with dpg.table_row():
-                        dpg.add_text("Image Status")
-                        dpg.add_text("Not Selected", tag="table_image_status")
+            #         with dpg.table_row():
+            #             dpg.add_text("Image Status")
+            #             dpg.add_text("Not Selected", tag="table_image_status")
                     
-                    with dpg.table_row():
-                        dpg.add_text("Last Prediction")
-                        dpg.add_text("None", tag="table_last_prediction")
+            #         with dpg.table_row():
+            #             dpg.add_text("Last Prediction")
+            #             dpg.add_text("None", tag="table_last_prediction")
 
 if __name__ == '__main__':
     # 设置主窗口
@@ -371,8 +371,10 @@ if __name__ == '__main__':
     # 初始化文件浏览器
     refresh_file_explorer()
 
+    setup_auto_refresh()
+
     # 创建视口 - 设置最小尺寸以防止过度缩放
-    dpg.create_viewport(title="Cat Classifier - Model & Image Selection", width=1400, height=900, 
+    dpg.create_viewport(title="Cat Classifier Sever Client - 404 Found", width=1400, height=900, 
                     resizable=True, min_width=1000, min_height=700, max_width=2400, max_height=1800)
 
     # 设置视口属性
