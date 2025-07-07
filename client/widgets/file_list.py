@@ -270,7 +270,7 @@ def is_image_file(filename):
     """检查文件是否为支持的图片格式"""
     return any(filename.lower().endswith(ext) for ext in image_extensions)
 
-def scan_directory_for_images(directory):
+def scan_directory_for_images(directory, max_deppth=3, current_depth=0):
     """扫描指定目录及其子目录下的图片文件"""
     result = {"directories": {}, "files": []}
     try:
@@ -279,7 +279,7 @@ def scan_directory_for_images(directory):
                 full_path = os.path.join(directory, item)
                 if os.path.isdir(full_path):
                     # 递归扫描子目录
-                    result["directories"][item] = scan_directory_for_images(full_path)
+                    result["directories"][item] = scan_directory_for_images(full_path, max_deppth, current_depth + 1)
                 elif os.path.isfile(full_path) and is_image_file(item):
                     # 添加图片文件
                     result["files"].append(item)
@@ -604,7 +604,7 @@ def refresh_file_explorer():
         dpg.delete_item("file_explorer_section")
     
     # 创建新的文件树结构
-    with dpg.collapsing_header(label="Image Explorer", default_open=False, tag="file_explorer_section", parent="left_panel"):
+    with dpg.collapsing_header(label="Image Explorer", default_open=True, tag="file_explorer_section", parent="left_panel"):
         dpg.add_text("Images Directory:", color=(0, 255, 0))
         
         # 目录输入和浏览按钮
