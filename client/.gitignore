@@ -1,0 +1,8 @@
+# Ignore results
+results
+
+# Ignore models
+model/*
+
+# Ignore archive
+archive

@@ -4,6 +4,7 @@ import random
 import os
 from widgets import *
 from system import client
+from utils import create_backup_on_exit
 
 
 # 创建上下文
@@ -372,6 +373,8 @@ if __name__ == '__main__':
     refresh_file_explorer()
 
     setup_auto_refresh()
+
+    dpg.set_exit_callback(create_backup_on_exit)  # 设置退出时的备份处理
 
     # 创建视口 - 设置最小尺寸以防止过度缩放
     dpg.create_viewport(title="Cat Classifier Sever Client - 404 Found", width=1400, height=900, 
