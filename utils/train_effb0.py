@@ -20,7 +20,8 @@ TOP_N_TRAINABLE = 20          # 解冻的最顶层数
 NUM_CLASSES     = 5
 NOISE_LEVEL     = 0.1          # 高斯噪声水平
 BLUR_LEVEL      = 3            # 模糊水平
-MODEL_FILE = "cats_efficientnetb0-Noise-Brightness-V1.keras"
+BRIGHTNESS_RANGE = [1.0, 1.5]  # 亮度范围
+MODEL_FILE = "cats_efficientnetb0-Noise-Brightness-V3-bright-05.keras"
 
 
 def preview_augmentation(img_dir_path, datagen, num_images=9):
@@ -192,13 +193,14 @@ def train(model_file, train_path, validation_path, num_classes=5, steps=100, num
         shear_range=0.2,
         zoom_range=0.2,
         horizontal_flip=True,
-        brightness_range=[0.7, 1.2],
+        vertical_flip=True,
+        brightness_range=BRIGHTNESS_RANGE,
         rotation_range=20
     )
     
     val_datagen = ImageDataGenerator(
         preprocessing_function=add_noise_and_blur_preprocessing,
-        brightness_range=[0.7, 1.2],
+        brightness_range=BRIGHTNESS_RANGE,
         rotation_range=20,
         shear_range=0.2
     )

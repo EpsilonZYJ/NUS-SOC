@@ -114,6 +114,12 @@ class MQTTInferenceServer:
             img_array = (img_array * 255).astype(np.uint8)
         else:
             img_array = img_array.astype(np.uint8)
+        # img_array = img_array.astype(np.uint8)
+        # print(img_array)
+
+        # 强制 BGR 到 RGB 转换（如果确定是BGR格式）
+        if img_array.shape[-1] == 3:
+            img_array = img_array[:, :, ::-1]  # 简单的通道反转
         
         # 转换为 PIL Image
         img_pil = Image.fromarray(img_array)

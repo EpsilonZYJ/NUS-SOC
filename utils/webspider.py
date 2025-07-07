@@ -69,6 +69,7 @@ def find_cats(num_images):
     driver.quit()
 
 if __name__ == '__main__':
-    query = "dogs"
-    num_images = 1000
-    find_cats(query, num_images)
+    # query = "dogs"
+    # num_images = 1000
+    # find_cats(query, num_images)
+    scrape_images("Chiikawa", 200, "./downloaded_images/Chiikawa")

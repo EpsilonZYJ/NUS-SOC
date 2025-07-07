@@ -1,6 +1,6 @@
 from .server import MQTTInferenceServer
 
-client = MQTTInferenceServer(hostname="127.0.0.1", model_name='efficientnet')
+client = MQTTInferenceServer(hostname="192.168.43.58", model_name='efficientnet')
 
 model_dict = {
     "efficientnet": "model/cats_efficientnetb0-Noise-Brightness-V1.keras",
