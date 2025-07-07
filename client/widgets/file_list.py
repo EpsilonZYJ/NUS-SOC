@@ -169,9 +169,11 @@ def model_combo_callback(sender, app_data, user_data):
     global selected_model_path
     if app_data and app_data != "No models found" and app_data != "Model directory not found":
         selected_model_path = model_dict.get(app_data, "")
+        print(f"Selected model path: {selected_model_path}")
+        print(app_data)
         dpg.set_value("model_status_text", f"Selected Model: {app_data}")
         dpg.set_value("model_path_display", f"Path: {selected_model_path}")
-        client.load_model(selected_model_path)  # 加载模型
+        client.init_model(app_data)  # 加载模型
         # 检查是否可以开始预测
         # update_prediction_button_state()
     else:

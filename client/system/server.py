@@ -51,20 +51,23 @@ class MQTTInferenceServer:
     A simple MQTT inference server that listens for image classification requests.
     """
     def __init__(self, hostname, password_path="mqtt.pwd", model_name='test'):
-        self.model_name = model_name
+        # self.model_name = model_name
         if model_name not in model_dict:
             raise ValueError(f"Model '{model_name}' is not supported. Available models: {list(model_dict.keys())}")
-        self.classes = model_dict[model_name]['classes']
+        # self.classes = model_dict[model_name]['classes']
         print("Loading model from ", model_dict[model_name]['path'])
         try:
-            # self.model = load_model(model_path)
-            self.model = load_model(model_dict[model_name])
-            self.model_params = model_dict[model_name]
+            # self.model = load_model(model_dict[model_name])
+            # self.model_params = model_dict[model_name]
+            self.init_model(model_name)
+            print("Model loaded successfully.")
         except Exception as e:
             print("Error loading model:", e)
             try:
-                self.model = load_model(model_dict[model_name]['path'], compile=False)
-                self.model_params = model_dict[model_name]
+                # self.model = load_model(model_dict[model_name]['path'], compile=False)
+                # self.model_params = model_dict[model_name]
+                self.init_model(model_name, compile=False)
+                print("Model loaded without compilation.")
             except Exception as e2:
                 print("Error loading model without compilation:", e2)
                 raise e2
@@ -155,18 +158,25 @@ class MQTTInferenceServer:
             "index": str(index)
         }
     
-    def load_model(self, modelpath):
-        if os.path.exists(modelpath):
-            try:
-                self.client.loop_stop()
-                model = load_model(modelpath)
-                self.client.loop_start()
-                print(f"Model loaded from {modelpath}")
-                return model
-            except Exception as e:
-                print(f"Error loading model from {modelpath}: {e}")
-        else:
-            return None
+    def init_model(self, model_name, compile=True):
+        try:
+            self.client.loop_stop()
+            self.model_name = model_name
+            self.classes = model_dict[model_name]['classes']
+            self.model = load_model(model_dict[model_name]['path'], compile=compile)
+            self.model_params = model_dict[model_name]
+            self.client.loop_start()    
+            print(f"Model {model_name} initialized")
+        except Exception as e:
+            print(f"Error loading model from {model_name}: {e}")
+        # if os.path.exists(modelpath):
+        #     try:
+        #         self.client.loop_stop()
+        #         self.model = load_model(modelpath)
+        #         self.client.loop_start()
+        #         print(f"Model loaded from {modelpath}")
+        #     except Exception as e:
+        #         print(f"Error loading model from {modelpath}: {e}")
 
     def on_message(self, client, userdata, msg):
         recv_dict = json.loads(msg.payload)
