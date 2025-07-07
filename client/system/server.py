@@ -12,6 +12,7 @@ from queue import Queue
 
 classes = ["daisy", "dandelion", "roses", "sunflowers", "tulips"] # used for test
 cat_classes = ['pallas', 'persian', 'ragdoll', 'singapura', 'sphynx']  # used for cat classification
+cat_matching = ['cat_police','chiikawa','doraemon','garfield','hellokitty','hongmao','lingjiecat','puss_in_boots','luna','sensei','tom','yuumi']
 models = ['efficientnet', 'xception', 'test']  # available models for cat classification
 
 model_dict = {
@@ -40,7 +41,8 @@ model_dict = {
         "classes": cat_classes
     }
 }
-        
+cat_matching_model = "model/cats_matching.keras"  # model for cat matching
+
 FILENAME = 'flowers.keras'  # used for test
 EFFICIENTNET_FILENAME = 'modelpara/cat_classifier_efficientnet.h5'
 XCEPTION_FILENAME = 'modelpara/cat_classifier_xception.h5'  # used for cat classification
@@ -51,21 +53,27 @@ class MQTTInferenceServer:
     A simple MQTT inference server that listens for image classification requests.
     """
     def __init__(self, hostname, password_path="mqtt.pwd", model_name='test'):
-        # self.model_name = model_name
+        try:
+            self.matching_model = load_model(cat_matching_model)
+            print("Matching model loaded successfully.")
+        except Exception as e:
+            print("Error loading matching model:", e)
+            try:
+                self.matching_model = load_model(cat_matching_model, compile=False)
+                print("Matching model loaded without compilation.")
+            except Exception as e2:
+                print("Error loading model without compilation:", e2)
+                raise e2
+            self.matching_model = None
         if model_name not in model_dict:
             raise ValueError(f"Model '{model_name}' is not supported. Available models: {list(model_dict.keys())}")
-        # self.classes = model_dict[model_name]['classes']
         print("Loading model from ", model_dict[model_name]['path'])
         try:
-            # self.model = load_model(model_dict[model_name])
-            # self.model_params = model_dict[model_name]
             self.init_model(model_name)
             print("Model loaded successfully.")
         except Exception as e:
             print("Error loading model:", e)
             try:
-                # self.model = load_model(model_dict[model_name]['path'], compile=False)
-                # self.model_params = model_dict[model_name]
                 self.init_model(model_name, compile=False)
                 print("Model loaded without compilation.")
             except Exception as e2:
@@ -87,12 +95,6 @@ class MQTTInferenceServer:
 
         print("Done")
     
-    # def load_image_for_models(self, img_data):
-    #     input_size = self.model_params['input_size']
-    #     img_data = Image.resize(input_size, input_size)  # Resize the image
-    #     img_data = np.array(img_data) * self.model_params['scale']  # Scale the image data
-    #     final = np.expand_dims(img_data, axis=0)  # Add batch dimension
-    #     return final
 
     def load_image_for_models(self, img_data):
         """
@@ -156,12 +158,18 @@ class MQTTInferenceServer:
         print("Start classifying.")
         label, prob, index = self.classify(data)
         print("Done.")
-
+        if self.matching_model is not None:
+            cat_match_label, cat_match_prob, cat_match_index = self.classify_cat_matching(data)
+            print(f"Cat Matching Result: {cat_match_label}, Score: {cat_match_prob}, Index: {cat_match_index}")
+            # label = f"{label} - {cat_match_label}"
         return {
             "filename": filename,
             "prediction": label,
             "score": float(prob),
-            "index": str(index)
+            "index": str(index),
+            "cat_match_prediction": cat_match_label,
+            "cat_match_score": float(cat_match_prob),
+            "cat_match_index": str(cat_match_index)
         }
     
     def init_model(self, model_name, compile=True):
@@ -175,14 +183,15 @@ class MQTTInferenceServer:
             print(f"Model {model_name} initialized")
         except Exception as e:
             print(f"Error loading model from {model_name}: {e}")
-        # if os.path.exists(modelpath):
-        #     try:
-        #         self.client.loop_stop()
-        #         self.model = load_model(modelpath)
-        #         self.client.loop_start()
-        #         print(f"Model loaded from {modelpath}")
-        #     except Exception as e:
-        #         print(f"Error loading model from {modelpath}: {e}")
+
+    def classify_cat_matching(self, image):
+        """
+        使用猫匹配模型进行分类
+        """
+        result = self.matching_model.predict(image)
+        themax = np.argmax(result)
+        print("Cat Matching Result: ", result)
+        return (cat_matching[themax], result[0][themax], themax)
 
     def on_message(self, client, userdata, msg):
         recv_dict = json.loads(msg.payload)
@@ -194,53 +203,6 @@ class MQTTInferenceServer:
         print("Sending results.")
         self.client.publish("Group19/IMAGE/predict", json.dumps(result))
     
-    # def plot_image(self, img_data, recv_dict, result):
-    #     if img_data.ndim == 4 and img_data.shape[0] == 1:
-    #         img_display = img_data[0]
-    #     else:
-    #         img_display = img_data
-
-    #     if img_display.max() <= 1.0:
-    #         img_display = (img_display * 255).astype(np.uint8)
-    #     else:
-    #         img_display = img_display.astype(np.uint8)
-    #     # plot the image
-    #     plt.figure(figsize=(8, 6))
-    #     plt.imshow(img_display)
-    #     plt.title(f"File: {recv_dict['filename']}\nPrediction: {result['prediction']} (Score: {result['score']:.3f})\nModel: {self.model_name}")
-    #     plt.axis('off')
-    #     # Create results directory if it doesn't exist
-    #     results_dir = "results"
-    #     if not os.path.exists(results_dir):
-    #         os.makedirs(results_dir)
-    #     # Save the plot to the results directory
-    #     # output_filename = f"result_{recv_dict['filename'].split('/')[-1]}"
-    #     output_filename = f"{results_dir}/result_{recv_dict['filename'].split('/')[-1]}"
-    #     plt.savefig(output_filename, dpi=150, bbox_inches='tight')
-    #     plt.close() 
-    #     print(f"Result saved to {output_filename}")
-
-    #     image_info = {
-    #         "filename": recv_dict["filename"],
-    #         "prediction": result["prediction"],
-    #         "score": result["score"],
-    #         "index": result["index"],
-    #         "image_path": output_filename
-    #     }
-    #     # Save the image information to a JSON file
-    #     try:
-    #         if os.path.exists(IMAGE_FILEPATH):
-    #             with open(IMAGE_FILEPATH, 'r', encoding='utf-8') as f:
-    #                 data = json.load(f)
-    #         else:
-    #             data = []
-    #     except (json.JSONDecodeError, FileNotFoundError):
-    #         data = []
-
-    #     data.append(image_info)
-    #     with open(IMAGE_FILEPATH, 'w', encoding='utf-8') as f:
-    #         json.dump(data, f, indent=4, ensure_ascii=False)
-    #         f.write('\n')
 
     def _plot_worker(self):
         """

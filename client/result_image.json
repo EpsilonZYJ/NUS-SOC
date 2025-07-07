@@ -1,0 +1,373 @@
+[
+    {
+        "filename": "./cat_samples/Pallas1.jpg",
+        "prediction": "pallas - tom",
+        "score": 0.9999887943267822,
+        "index": "0",
+        "image_path": "results/result_Pallas1.jpg"
+    },
+    {
+        "filename": "./cat_samples/Pallas10.jpg",
+        "prediction": "pallas - tom",
+        "score": 0.9999709129333496,
+        "index": "0",
+        "image_path": "results/result_Pallas10.jpg"
+    },
+    {
+        "filename": "./cat_samples/Pallas11.jpg",
+        "prediction": "pallas - chiikawa",
+        "score": 0.9999986886978149,
+        "index": "0",
+        "image_path": "results/result_Pallas11.jpg"
+    },
+    {
+        "filename": "./cat_samples/Pallas12.jpg",
+        "prediction": "pallas - puss_in_boots",
+        "score": 0.9999842643737793,
+        "index": "0",
+        "image_path": "results/result_Pallas12.jpg"
+    },
+    {
+        "filename": "./cat_samples/Pallas13.jpg",
+        "prediction": "pallas - sensei",
+        "score": 0.9999969005584717,
+        "index": "0",
+        "image_path": "results/result_Pallas13.jpg"
+    },
+    {
+        "filename": "./cat_samples/Pallas14.jpg",
+        "prediction": "pallas - sensei",
+        "score": 0.9999994039535522,
+        "index": "0",
+        "image_path": "results/result_Pallas14.jpg"
+    },
+    {
+        "filename": "./cat_samples/Pallas17.jpg",
+        "prediction": "pallas - lingjiecat",
+        "score": 0.9999936819076538,
+        "index": "0",
+        "image_path": "results/result_Pallas17.jpg"
+    },
+    {
+        "filename": "./cat_samples/Pallas18.jpg",
+        "prediction": "pallas - cat_police",
+        "score": 0.9999338388442993,
+        "index": "0",
+        "image_path": "results/result_Pallas18.jpg"
+    },
+    {
+        "filename": "./cat_samples/Pallas2.jpg",
+        "prediction": "pallas - chiikawa",
+        "score": 0.9999954700469971,
+        "index": "0",
+        "image_path": "results/result_Pallas2.jpg"
+    },
+    {
+        "filename": "./cat_samples/Pallas4.jpg",
+        "prediction": "pallas - hongmao",
+        "score": 0.9997391104698181,
+        "index": "0",
+        "image_path": "results/result_Pallas4.jpg"
+    },
+    {
+        "filename": "./cat_samples/Pallas5.jpg",
+        "prediction": "pallas - hongmao",
+        "score": 0.9999966621398926,
+        "index": "0",
+        "image_path": "results/result_Pallas5.jpg"
+    },
+    {
+        "filename": "./cat_samples/Persian1.jpg",
+        "prediction": "persian - lingjiecat",
+        "score": 0.9176899194717407,
+        "index": "1",
+        "image_path": "results/result_Persian1.jpg"
+    },
+    {
+        "filename": "./cat_samples/Persian2.jpg",
+        "prediction": "persian - lingjiecat",
+        "score": 0.771709144115448,
+        "index": "1",
+        "image_path": "results/result_Persian2.jpg"
+    },
+    {
+        "filename": "./cat_samples/Persian3.jpg",
+        "prediction": "persian - lingjiecat",
+        "score": 0.9995225667953491,
+        "index": "1",
+        "image_path": "results/result_Persian3.jpg"
+    },
+    {
+        "filename": "./cat_samples/Persian4.jpg",
+        "prediction": "persian - lingjiecat",
+        "score": 0.9983559250831604,
+        "index": "1",
+        "image_path": "results/result_Persian4.jpg"
+    },
+    {
+        "filename": "./cat_samples/Persian5.jpg",
+        "prediction": "persian - yuumi",
+        "score": 0.8658047318458557,
+        "index": "1",
+        "image_path": "results/result_Persian5.jpg"
+    },
+    {
+        "filename": "./cat_samples/Persian6.jpg",
+        "prediction": "persian - tom",
+        "score": 0.999849796295166,
+        "index": "1",
+        "image_path": "results/result_Persian6.jpg"
+    },
+    {
+        "filename": "./cat_samples/Ragdoll1.jpg",
+        "prediction": "ragdoll - yuumi",
+        "score": 0.9890953898429871,
+        "index": "2",
+        "image_path": "results/result_Ragdoll1.jpg"
+    },
+    {
+        "filename": "./cat_samples/Ragdoll13.jpg",
+        "prediction": "ragdoll - yuumi",
+        "score": 0.9990034699440002,
+        "index": "2",
+        "image_path": "results/result_Ragdoll13.jpg"
+    },
+    {
+        "filename": "./cat_samples/Ragdoll14.jpg",
+        "prediction": "ragdoll - yuumi",
+        "score": 0.9473837018013,
+        "index": "2",
+        "image_path": "results/result_Ragdoll14.jpg"
+    },
+    {
+        "filename": "./cat_samples/Ragdoll15.jpg",
+        "prediction": "ragdoll - yuumi",
+        "score": 0.7547478675842285,
+        "index": "2",
+        "image_path": "results/result_Ragdoll15.jpg"
+    },
+    {
+        "filename": "./cat_samples/Ragdoll16.jpg",
+        "prediction": "ragdoll - yuumi",
+        "score": 0.9851072430610657,
+        "index": "2",
+        "image_path": "results/result_Ragdoll16.jpg"
+    },
+    {
+        "filename": "./cat_samples/Ragdoll17.jpg",
+        "prediction": "ragdoll - yuumi",
+        "score": 0.999314546585083,
+        "index": "2",
+        "image_path": "results/result_Ragdoll17.jpg"
+    },
+    {
+        "filename": "./cat_samples/Ragdoll2.jpg",
+        "prediction": "ragdoll - yuumi",
+        "score": 0.9564052820205688,
+        "index": "2",
+        "image_path": "results/result_Ragdoll2.jpg"
+    },
+    {
+        "filename": "./cat_samples/Ragdoll3.jpg",
+        "prediction": "ragdoll - sensei",
+        "score": 0.9456321001052856,
+        "index": "2",
+        "image_path": "results/result_Ragdoll3.jpg"
+    },
+    {
+        "filename": "./cat_samples/Ragdoll4.jpg",
+        "prediction": "ragdoll - lingjiecat",
+        "score": 0.9710438251495361,
+        "index": "2",
+        "image_path": "results/result_Ragdoll4.jpg"
+    },
+    {
+        "filename": "./cat_samples/Ragdoll5.jpg",
+        "prediction": "ragdoll - yuumi",
+        "score": 0.9978505373001099,
+        "index": "2",
+        "image_path": "results/result_Ragdoll5.jpg"
+    },
+    {
+        "filename": "./cat_samples/Ragdoll6.jpg",
+        "prediction": "ragdoll - sensei",
+        "score": 0.7153290510177612,
+        "index": "2",
+        "image_path": "results/result_Ragdoll6.jpg"
+    },
+    {
+        "filename": "./cat_samples/Ragdoll7.jpg",
+        "prediction": "ragdoll - tom",
+        "score": 0.9264834523200989,
+        "index": "2",
+        "image_path": "results/result_Ragdoll7.jpg"
+    },
+    {
+        "filename": "./cat_samples/Ragdoll8.jpg",
+        "prediction": "ragdoll - hongmao",
+        "score": 0.9305582642555237,
+        "index": "2",
+        "image_path": "results/result_Ragdoll8.jpg"
+    },
+    {
+        "filename": "./cat_samples/Ragdoll9.jpg",
+        "prediction": "ragdoll - sensei",
+        "score": 0.6206173300743103,
+        "index": "2",
+        "image_path": "results/result_Ragdoll9.jpg"
+    },
+    {
+        "filename": "./cat_samples/Singapura1.jpg",
+        "prediction": "singapura - yuumi",
+        "score": 0.9999306201934814,
+        "index": "3",
+        "image_path": "results/result_Singapura1.jpg"
+    },
+    {
+        "filename": "./cat_samples/Singapura2.jpg",
+        "prediction": "singapura - yuumi",
+        "score": 0.9998418092727661,
+        "index": "3",
+        "image_path": "results/result_Singapura2.jpg"
+    },
+    {
+        "filename": "./cat_samples/Singapura3.jpg",
+        "prediction": "singapura - tom",
+        "score": 0.9989340901374817,
+        "index": "3",
+        "image_path": "results/result_Singapura3.jpg"
+    },
+    {
+        "filename": "./cat_samples/Singapura4.jpg",
+        "prediction": "singapura - yuumi",
+        "score": 0.9908287525177002,
+        "index": "3",
+        "image_path": "results/result_Singapura4.jpg"
+    },
+    {
+        "filename": "./cat_samples/Singapura5.jpg",
+        "prediction": "singapura - hongmao",
+        "score": 0.999991774559021,
+        "index": "3",
+        "image_path": "results/result_Singapura5.jpg"
+    },
+    {
+        "filename": "./cat_samples/Singapura7.jpg",
+        "prediction": "singapura - yuumi",
+        "score": 0.9999804496765137,
+        "index": "3",
+        "image_path": "results/result_Singapura7.jpg"
+    },
+    {
+        "filename": "./cat_samples/Sphynx1.jpg",
+        "prediction": "sphynx - yuumi",
+        "score": 0.9999972581863403,
+        "index": "4",
+        "image_path": "results/result_Sphynx1.jpg"
+    },
+    {
+        "filename": "./cat_samples/Sphynx11.jpg",
+        "prediction": "sphynx - yuumi",
+        "score": 0.999996542930603,
+        "index": "4",
+        "image_path": "results/result_Sphynx11.jpg"
+    },
+    {
+        "filename": "./cat_samples/Sphynx12.jpg",
+        "prediction": "sphynx - yuumi",
+        "score": 0.9999998807907104,
+        "index": "4",
+        "image_path": "results/result_Sphynx12.jpg"
+    },
+    {
+        "filename": "./cat_samples/Sphynx14.jpg",
+        "prediction": "sphynx - yuumi",
+        "score": 0.990865170955658,
+        "index": "4",
+        "image_path": "results/result_Sphynx14.jpg"
+    },
+    {
+        "filename": "./cat_samples/Sphynx15.jpg",
+        "prediction": "sphynx - yuumi",
+        "score": 0.9999336004257202,
+        "index": "4",
+        "image_path": "results/result_Sphynx15.jpg"
+    },
+    {
+        "filename": "./cat_samples/Sphynx16.jpg",
+        "prediction": "sphynx - yuumi",
+        "score": 0.9991299510002136,
+        "index": "4",
+        "image_path": "results/result_Sphynx16.jpg"
+    },
+    {
+        "filename": "./cat_samples/Sphynx17.jpg",
+        "prediction": "sphynx - yuumi",
+        "score": 1.0,
+        "index": "4",
+        "image_path": "results/result_Sphynx17.jpg"
+    },
+    {
+        "filename": "./cat_samples/Sphynx18.jpg",
+        "prediction": "sphynx - yuumi",
+        "score": 1.0,
+        "index": "4",
+        "image_path": "results/result_Sphynx18.jpg"
+    },
+    {
+        "filename": "./cat_samples/Sphynx19.jpg",
+        "prediction": "sphynx - yuumi",
+        "score": 0.9999972581863403,
+        "index": "4",
+        "image_path": "results/result_Sphynx19.jpg"
+    },
+    {
+        "filename": "./cat_samples/Sphynx2.jpg",
+        "prediction": "sphynx - yuumi",
+        "score": 0.9999998807907104,
+        "index": "4",
+        "image_path": "results/result_Sphynx2.jpg"
+    },
+    {
+        "filename": "./cat_samples/Sphynx20.jpg",
+        "prediction": "sphynx - yuumi",
+        "score": 0.9999997615814209,
+        "index": "4",
+        "image_path": "results/result_Sphynx20.jpg"
+    },
+    {
+        "filename": "./cat_samples/Sphynx3.jpg",
+        "prediction": "sphynx - yuumi",
+        "score": 0.9999995231628418,
+        "index": "4",
+        "image_path": "results/result_Sphynx3.jpg"
+    },
+    {
+        "filename": "./cat_samples/Sphynx4.jpg",
+        "prediction": "sphynx - tom",
+        "score": 0.9999823570251465,
+        "index": "4",
+        "image_path": "results/result_Sphynx4.jpg"
+    },
+    {
+        "filename": "./cat_samples/Sphynx5.jpg",
+        "prediction": "sphynx - yuumi",
+        "score": 0.9999994039535522,
+        "index": "4",
+        "image_path": "results/result_Sphynx5.jpg"
+    },
+    {
+        "filename": "./cat_samples/Sphynx8.jpg",
+        "prediction": "sphynx - yuumi",
+        "score": 0.9999833106994629,
+        "index": "4",
+        "image_path": "results/result_Sphynx8.jpg"
+    },
+    {
+        "filename": "./cat_samples/Sphynx9.jpg",
+        "prediction": "sphynx - yuumi",
+        "score": 0.9999752044677734,
+        "index": "4",
+        "image_path": "results/result_Sphynx9.jpg"
+    }
+]
