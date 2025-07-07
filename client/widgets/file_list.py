@@ -605,10 +605,10 @@ def refresh_file_explorer():
     
     # 创建新的文件树结构
     with dpg.collapsing_header(label="Image Explorer", default_open=True, tag="file_explorer_section", parent="left_panel"):
-        dpg.add_text("Images Directory:", color=(0, 255, 0))
+        # dpg.add_text("Images Directory:", color=(0, 255, 0))
         
         # 目录输入和浏览按钮
-        with dpg.group(horizontal=True):
+        with dpg.group(horizontal=True, show=False):
             dpg.add_input_text(
                 tag="explorer_directory_input",
                 default_value=current_directory,
