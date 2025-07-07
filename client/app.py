@@ -219,11 +219,11 @@ with dpg.window(label="Dear PyGui Example", tag="Primary Window", width=-1, heig
                         indent=5
                     )
                 
-                    dpg.add_button(
-                        label="Load",
-                        callback=refresh_models_callback,
-                        width=90
-                    )
+                    # dpg.add_button(
+                    #     label="Load",
+                    #     callback=refresh_models_callback,
+                    #     width=90
+                    # )
                 
                 dpg.add_text("No model selected", tag="model_status_text", color=(255, 255, 0))
                 dpg.add_text("", tag="model_path_display", color=(150, 150, 150))
