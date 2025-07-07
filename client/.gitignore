@@ -1,6 +1,3 @@
-# Ignore results
-results
-
 # Ignore models
 model/*
 
