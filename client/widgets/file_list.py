@@ -10,6 +10,8 @@ import time
 import json
 import numpy as np
 
+all_cats_found = False
+
 # 初始化可用模型列表
 def initialize_models():
     global available_models
@@ -470,17 +472,17 @@ def calculate_directory_hash(directory):
     # 计算哈希值
     return hashlib.md5(dir_state.encode()).hexdigest()
 
-def update_cat_found_status():
-    global cat_found_dict, cat_found_status_code
-    with open('result_image.json', 'r') as f:
-        data = json.load(f)
-        for item in data:
-            cat_name = item.get("prediction", "")
-            cat_found_status_code = cat_found_status_code | cat_found_dict[cat_name]
+# def update_cat_found_status():
+#     global cat_found_dict, cat_found_status_code
+#     with open('result_image.json', 'r') as f:
+#         data = json.load(f)
+#         for item in data:
+#             cat_name = item.get("prediction", "")
+#             cat_found_status_code = cat_found_status_code | cat_found_dict[cat_name]
 
 def check_directory_changes():
     """检查目录是否有变化，如果有则刷新文件浏览器"""
-    global current_directory, last_directory_state, cat_found_status_code
+    global current_directory, last_directory_state, cat_found_status_code, all_cats_found
     
     if not auto_refresh_enabled:
         return
@@ -493,7 +495,7 @@ def check_directory_changes():
         print(f"Directory changes detected in {current_directory}, refreshing...")
         refresh_file_explorer()
     
-    if cat_found_status_code == 31:
+    if not all_cats_found:
         update_cat_found_status()
     
     # 更新哈希值
@@ -506,8 +508,7 @@ def setup_auto_refresh():
     # 计算初始目录哈希值
     last_directory_state = calculate_directory_hash(current_directory)
     
-    if cat_found_status_code == 31:
-        update_cat_found_status()
+    update_cat_found_status()
 
     # 使用DearPyGui的帧计数回调实现定期检查
     def frame_callback(sender, data):
@@ -591,7 +592,7 @@ def refresh_file_explorer():
 
 def update_cat_found_status():
     """更新猫咪发现状态"""
-    global cat_found_dict, cat_found_status_code
+    global cat_found_dict, cat_found_status_code, all_cats_found
     
     # 重置状态
     cat_found_status_code = 0
@@ -618,6 +619,11 @@ def update_cat_found_status():
     found_count = len(found_cats)
     total_count = len(cat_found_dict)
     
+    # 检查是否找到所有猫
+    if found_count == total_count and total_count > 0:
+        all_cats_found = True
+        print("All cats have been discovered! Status updates will be stopped.")
+
     # 更新进度文本
     if dpg.does_item_exist("cat_progress_text"):
         progress_color = (100, 255, 100) if found_count == total_count else (255, 255, 0)
