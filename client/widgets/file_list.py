@@ -10,144 +10,6 @@ import time
 import json
 import numpy as np
 
-# def scan_files_in_directory(directory, extensions=['.jpg', '.png', '.keras', '.h5']):
-#     """扫描目录中的指定类型文件"""
-#     files = []
-#     if os.path.exists(directory):
-#         for file in os.listdir(directory):
-#             if any(file.lower().endswith(ext) for ext in extensions):
-#                 files.append(file)
-#     return files
-
-# def combo_file_callback(sender, app_data, user_data):
-#     """下拉框选择文件的回调函数"""
-#     global selected_file_path
-#     selected_filename = app_data
-    
-#     # 构建完整路径
-#     base_directory = "./data"  # 您的文件目录
-#     selected_file_path = os.path.join(base_directory, selected_filename)
-    
-#     print(f"Selected file: {selected_file_path}")
-    
-#     # 更新状态显示
-#     dpg.set_value("status_text", f"Selected: {selected_filename}")
-#     dpg.set_value("file_path_text", f"Path: {selected_file_path}")
-    
-#     # 根据文件类型执行不同操作
-#     if selected_filename.lower().endswith(('.jpg', '.png', '.jpeg')):
-#         process_image_file(selected_file_path)
-#     elif selected_filename.lower().endswith(('.keras', '.h5')):
-#         process_model_file(selected_file_path)
-
-# def process_image_file(file_path):
-#     """处理图像文件"""
-#     print(f"Processing image: {file_path}")
-#     dpg.set_value("status_text", f"Image loaded: {os.path.basename(file_path)}")
-#     # 在这里添加图像处理逻辑
-
-# def process_model_file(file_path):
-#     """处理模型文件"""
-#     print(f"Processing model: {file_path}")
-#     dpg.set_value("status_text", f"Model loaded: {os.path.basename(file_path)}")
-#     # 在这里添加模型加载逻辑
-
-# def refresh_file_list():
-#     """刷新文件列表"""
-#     global file_list
-#     directory = "./data"  # 您的文件目录
-#     file_list = scan_files_in_directory(directory)
-    
-#     # 更新下拉框选项
-#     if dpg.does_item_exist("file_combo"):
-#         dpg.configure_item("file_combo", items=file_list)
-    
-#     print(f"Found {len(file_list)} files: {file_list}")
-
-# def refresh_file_list_from_input():
-#     """从输入框获取目录并刷新文件列表"""
-#     directory = dpg.get_value("directory_input")
-    
-#     # 获取过滤器设置
-#     filter_images = dpg.get_value("filter_images")
-#     filter_models = dpg.get_value("filter_models")
-#     filter_all = dpg.get_value("filter_all")
-    
-#     # 构建扩展名列表
-#     extensions = []
-#     if filter_images:
-#         extensions.extend(['.jpg', '.jpeg', '.png', '.bmp', '.tiff'])
-#     if filter_models:
-#         extensions.extend(['.keras', '.h5', '.pkl', '.joblib'])
-#     if filter_all:
-#         extensions = ['']  # 空字符串表示所有文件
-    
-#     # 扫描文件
-#     global file_list
-#     file_list = scan_files_in_directory(directory, extensions)
-    
-#     # 更新下拉框
-#     if file_list:
-#         dpg.configure_item("file_combo", items=file_list, default_value=file_list[0])
-#         dpg.set_value("status_text", f"Found {len(file_list)} files")
-#     else:
-#         dpg.configure_item("file_combo", items=["No files found"], default_value="No files found")
-#         dpg.set_value("status_text", "No files found in directory")
-
-# def load_selected_file():
-#     """加载选中的文件"""
-#     global selected_file_path
-#     if selected_file_path and os.path.exists(selected_file_path):
-#         dpg.set_value("status_text", f"Loading: {os.path.basename(selected_file_path)}")
-#         # 在这里添加文件加载逻辑
-#         print(f"Loading file: {selected_file_path}")
-#     else:
-#         dpg.set_value("status_text", "No valid file selected")
-
-# def process_selected_file():
-#     """处理选中的文件"""
-#     global selected_file_path
-#     if selected_file_path and os.path.exists(selected_file_path):
-#         file_ext = os.path.splitext(selected_file_path)[1].lower()
-        
-#         if file_ext in ['.jpg', '.jpeg', '.png']:
-#             # 图像处理逻辑
-#             dpg.set_value("status_text", f"Processing image: {os.path.basename(selected_file_path)}")
-#             # 添加您的图像处理代码
-            
-#         elif file_ext in ['.keras', '.h5']:
-#             # 模型处理逻辑
-#             dpg.set_value("status_text", f"Loading model: {os.path.basename(selected_file_path)}")
-#             # 添加您的模型加载代码
-            
-#         else:
-#             dpg.set_value("status_text", f"Processing file: {os.path.basename(selected_file_path)}")
-#             # 通用文件处理
-#     else:
-#         dpg.set_value("status_text", "No valid file selected for processing")
-
-# # 改进的文件扫描函数
-# def scan_files_in_directory(directory, extensions=['.jpg', '.png', '.keras', '.h5']):
-#     """扫描目录中的指定类型文件"""
-#     files = []
-#     try:
-#         if os.path.exists(directory):
-#             for file in os.listdir(directory):
-#                 file_path = os.path.join(directory, file)
-#                 # 只处理文件，不处理目录
-#                 if os.path.isfile(file_path):
-#                     # 如果 extensions 为空或包含空字符串，则包含所有文件
-#                     if not extensions or '' in extensions:
-#                         files.append(file)
-#                     else:
-#                         # 检查文件扩展名
-#                         if any(file.lower().endswith(ext.lower()) for ext in extensions):
-#                             files.append(file)
-#     except Exception as e:
-#         print(f"Error scanning directory {directory}: {e}")
-    
-#     return sorted(files)  # 排序文件列表
-
 # 初始化可用模型列表
 def initialize_models():
     global available_models
@@ -208,65 +70,45 @@ def clear_image_selection():
     dpg.set_value("image_path_display", "")
     update_prediction_button_state()
 
-# # 预测功能相关回调函数
-# def update_prediction_button_state():
-#     global selected_model_path, selected_image_path
-#     # 只有当模型和图片都选择了才能进行预测
-#     can_predict = bool(selected_model_path and selected_image_path)
-#     dpg.configure_item("predict_button", enabled=can_predict)
-    
-#     # 更新表格状态
-#     if dpg.does_item_exist("table_model_status"):
-#         model_status = os.path.basename(selected_model_path) if selected_model_path else "Not Selected"
-#         dpg.set_value("table_model_status", model_status)
-    
-#     if dpg.does_item_exist("table_image_status"):
-#         image_status = os.path.basename(selected_image_path) if selected_image_path else "Not Selected"
-#         dpg.set_value("table_image_status", image_status)
-    
-#     if can_predict:
-#         dpg.set_value("prediction_status", "Ready to predict")
-#         dpg.configure_item("prediction_status", color=(0, 255, 0))
-#     else:
-#         dpg.set_value("prediction_status", "Please select both model and image")
-#         dpg.configure_item("prediction_status", color=(255, 255, 0))
-
-# def start_prediction():
-#     if not (selected_model_path and selected_image_path):
-#         dpg.set_value("prediction_result", "Error: Please select both model and image")
-#         return
-    
-#     # 这里应该调用实际的预测函数
-#     dpg.set_value("prediction_status", "Predicting...")
-#     dpg.configure_item("prediction_status", color=(255, 255, 0))
-    
-#     try:
-#         # 在实际应用中，这里应该调用model_image_handler中的预测函数
-#         result = f"Prediction completed!\nModel: {os.path.basename(selected_model_path)}\nImage: {os.path.basename(selected_image_path)}\n\nResult: Sample prediction result"
-#         dpg.set_value("prediction_result", result)
-#         dpg.set_value("prediction_status", "Prediction completed")
-#         dpg.configure_item("prediction_status", color=(0, 255, 0))
-        
-#         # 更新表格中的最后预测状态
-#         if dpg.does_item_exist("table_last_prediction"):
-#             dpg.set_value("table_last_prediction", "Success")
-            
-#     except Exception as e:
-#         dpg.set_value("prediction_result", f"Prediction failed: {str(e)}")
-#         dpg.set_value("prediction_status", "Prediction failed")
-#         dpg.configure_item("prediction_status", color=(255, 0, 0))
-        
-#         # 更新表格中的最后预测状态
-#         if dpg.does_item_exist("table_last_prediction"):
-#             dpg.set_value("table_last_prediction", "Failed")
-
 # 全局变量
 current_directory = "results"  # 默认图片目录
 image_extensions = ['.jpg', '.jpeg', '.png', '.bmp', '.gif', '.tiff']
 loaded_texture_id = 0  # 当前加载的纹理ID
+loaded_texture_id_cat = 0  # 当前加载的猫图片纹理ID
 last_directory_state = ""  # 上次目录状态的哈希值
 refresh_interval = 1.0  # 检查间隔（秒）
 auto_refresh_enabled = True  # 是否启用自动刷新
+
+cat_image_dir_dict = {
+    'cat_police': 'imgs/cat_police/',
+    'chiikawa': 'imgs/chiikawa/',
+    'doraemon': 'imgs/doraemon/',
+    'garfield': 'imgs/garfield/',
+    'hellokitty': 'imgs/hellokitty/',
+    'hongmao': 'imgs/hongmao/',
+    'lingjiecat': 'imgs/lingjiecat/',
+    'puss_in_boots': 'imgs/puss_in_boots/',
+    'luna': 'imgs/luna/',
+    'sensei': 'imgs/sensei/',
+    'tom': 'imgs/tom/',
+    'yuumi': 'imgs/yuumi/'
+}
+
+def random_choose_cat_from_dir(dirpath):
+    print("Here is the dirpath:", dirpath)
+    if not dirpath:
+        return None
+    if not os.path.exists(dirpath):
+        print(f"Directory does not exist: {dirpath}")
+        return None
+    files = [f for f in os.listdir(dirpath) if os.path.isfile(os.path.join(dirpath, f)) and is_image_file(f)]
+    print(files)
+    if not files:
+        print(f"No valid image files found in directory: {dirpath}")
+        return None
+    random_file = np.random.choice(files)
+    print(f"Randomly selected file: {random_file}")
+    return os.path.join(dirpath, random_file)
 
 def is_image_file(filename):
     """检查文件是否为支持的图片格式"""
@@ -399,7 +241,7 @@ def load_image_result(image_path, json_path='result_image.json'):
 
 def load_and_display_image(image_path):
     """加载并显示图片"""
-    global selected_image_path, loaded_texture_id
+    global selected_image_path, loaded_texture_id, loaded_texture_id_cat
     
     if not os.path.exists(image_path):
         dpg.set_value("status_text", f"Error: Image file not found: {image_path}")
@@ -489,14 +331,87 @@ def load_and_display_image(image_path):
             dpg.configure_item("displayed_image", texture_tag=loaded_texture_id, pos=[pos_x, pos_y])
             dpg.set_value("image_size_text", f"Size: {width}x{height}")
         
-        # 更新选中的图片（用于预测）
-        if "update_prediction_button_state" in globals():
-            update_prediction_button_state()
+        # # 更新选中的图片（用于预测）
+        # if "update_prediction_button_state" in globals():
+        #     update_prediction_button_state()
         
     except Exception as e:
         dpg.set_value("status_text", f"Error loading image: {str(e)}")
         print(f"Error loading image {image_path}: {e}")
     
+    try:
+        img_path = random_choose_cat_from_dir(
+            cat_image_dir_dict.get(item.get("cat_match_prediction", ""))
+        )
+        print(f"Cat image path: {img_path}")
+        if img_path is None:
+            img_path = "imgs/404.jpg"
+        # 为图片预览区域留出空间（减去标题和边距）
+        max_img_width = panel_width - 40  # 左右边距
+        max_img_height = panel_height - 100  # 上下边距及其他控件
+        print(img_path)
+        # 加载图片并创建纹理
+        img = Image.open(img_path)
+        
+        # 调整图片大小以适应显示区域，保持纵横比
+        max_size = (max_img_width, max_img_height)  # 最大显示尺寸
+        img.thumbnail(max_size, Image.Resampling.LANCZOS)
+        
+        # 转换为RGB模式（处理RGBA等其他模式）
+        # if img.mode != "RGB":
+        img = img.convert("RGBA")
+        
+        img_array = np.array(img, dtype=np.float32) / 255.0
+
+        # 展平数组（DearPyGui需要一维数组）
+        img_data = img_array.flatten()
+        # 获取尺寸
+        width, height = img.size
+        
+        # 将图片转换为数据
+        data = bytearray(img.tobytes())
+        
+        # 如果已有纹理，先删除
+        if loaded_texture_id_cat != 0 and dpg.does_item_exist(loaded_texture_id_cat):
+            dpg.delete_item(loaded_texture_id_cat)
+        
+        # 创建新纹理
+        with dpg.texture_registry():
+            loaded_texture_id_cat = dpg.add_static_texture(width, height, img_data)
+        
+        # 计算图片水平和垂直居中位置
+        pos_x = (max_img_width - width) // 2
+        pos_y = 40 + (max_img_height - height) // 2  # 标题下方留出空间，然后垂直居中
+    
+        # 确保右侧已有图片显示区域
+        if not dpg.does_item_exist("image_display_area_cat"):
+            with dpg.group(tag="image_display_area_cat", parent="right_panel"):
+                # dpg.add_text(f"Size: {width}x{height}", tag="image_size_text")
+                dpg.add_text("Fun:", color=(255, 255, 0))
+                # 创建一个child_window来容纳图片，使其在滚动区域内居中
+                with dpg.child_window(width=max_img_width, height=max_img_height, tag="image_container_cat"):
+                    dpg.add_image(loaded_texture_id_cat, tag="displayed_image_cat", pos=[pos_x, pos_y])
+        else:
+            # 更新现有图片和尺寸信息
+            dpg.configure_item("displayed_image_cat", texture_tag=loaded_texture_id_cat, pos=[pos_x, pos_y])
+            # dpg.set_value("image_size_text", f"Size: {width}x{height}")
+    except Exception as e:
+        print(f"Error loading cat image: {e}")
+    try:
+        cat_score = item.get("cat_match_score", -1.0)
+        cat_prediction = item.get("cat_match_prediction", "No result")
+        if not dpg.does_item_exist("prediction_result_cat"):
+            with dpg.group(tag="prediction_result_cat", parent="right_panel"):
+                dpg.add_text(f"Prediction: {cat_prediction}", tag="prediction_result_text_cat")
+                dpg.add_text(f"Score: {cat_score:.2f}" if cat_score >= 0 else "Score: N/A", tag="prediction_score_text_cat")
+        else:
+            dpg.set_value("prediction_result_text_cat", f"Prediction: {cat_prediction}")
+            dpg.set_value("prediction_score_text_cat", f"Score: {cat_score:.2f}" if cat_score >= 0 else "Score: N/A")
+    except Exception as e:
+        print(f"Error displaying cat prediction result: {e}")
+        # # 更新选中的图片（用于预测）
+        # if "update_prediction_button_state" in globals():
+        #     update_prediction_button_state() 
 
 # 目录选择对话框回调
 def directory_selector_callback(sender, app_data):
