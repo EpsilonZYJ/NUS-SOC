@@ -1,6 +1,6 @@
 import os
 import dearpygui.dearpygui as dpg
-from system.global_data import selected_model_path, selected_image_path, available_models
+from system.global_data import selected_model_path, selected_image_path, available_models, cat_found_dict, cat_found_status_code
 from system import client, model_dict
 import base64
 from PIL import Image
@@ -470,9 +470,17 @@ def calculate_directory_hash(directory):
     # 计算哈希值
     return hashlib.md5(dir_state.encode()).hexdigest()
 
+def update_cat_found_status():
+    global cat_found_dict, cat_found_status_code
+    with open('result_image.json', 'r') as f:
+        data = json.load(f)
+        for item in data:
+            cat_name = item.get("prediction", "")
+            cat_found_status_code = cat_found_status_code | cat_found_dict[cat_name]
+
 def check_directory_changes():
     """检查目录是否有变化，如果有则刷新文件浏览器"""
-    global current_directory, last_directory_state
+    global current_directory, last_directory_state, cat_found_status_code
     
     if not auto_refresh_enabled:
         return
@@ -484,6 +492,8 @@ def check_directory_changes():
     if current_hash != last_directory_state and last_directory_state != "":
         print(f"Directory changes detected in {current_directory}, refreshing...")
         refresh_file_explorer()
+        if cat_found_status_code != 31:
+            update_cat_found_status()
     
     # 更新哈希值
     last_directory_state = current_hash

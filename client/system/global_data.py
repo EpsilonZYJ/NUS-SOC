@@ -23,3 +23,13 @@ available_models = [
     "efficientnet-bright", 
     "efficientnet-dark"
 ]
+
+cat_found_dict = {
+    'pallas': 1, 
+    'persian': 2, 
+    'ragdoll': 4, 
+    'singapura': 8, 
+    'sphynx': 16
+}
+
+cat_found_status_code = 0

@@ -3,7 +3,7 @@ import math
 import random
 import os
 from widgets import *
-from system import client
+from system import client, cat_found_dict, cat_found_status_code
 from utils import create_backup_on_exit
 
 
@@ -229,6 +229,14 @@ with dpg.window(label="Dear PyGui Example", tag="Primary Window", width=-1, heig
                 dpg.add_text("", tag="model_path_display", color=(150, 150, 150))
                 
             dpg.add_separator()
+
+            with dpg.collapsing_header(label="Cat Found Status", default_open=True):
+                with dpg.group(horizontal=True, tag="cat_found_status_group"):
+                    for cat_name in cat_found_dict.keys():
+                        if cat_found_dict[cat_name] & cat_found_status_code != 0:
+                            dpg.add_text(f"{cat_name.capitalize()} Found", color=(0, 255, 0), tag=f"{cat_name}_found_text")
+                        else:
+                            dpg.add_text(f"{cat_name.capitalize()} Not Found", color=(255, 0, 0), tag=f"{cat_name}_found_text")
 
             # 图片文件选择区域
             with dpg.collapsing_header(label="Image Selection", default_open=False, show=False):
