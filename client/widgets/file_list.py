@@ -347,7 +347,7 @@ def load_and_display_image(image_path):
         if img_path is None:
             img_path = "imgs/404.jpg"
         # 为图片预览区域留出空间（减去标题和边距）
-        max_img_width = panel_width - 40  # 左右边距
+        max_img_width = panel_width  # 左右边距
         max_img_height = panel_height - 100  # 上下边距及其他控件
         print(img_path)
         # 加载图片并创建纹理
@@ -390,8 +390,8 @@ def load_and_display_image(image_path):
             loaded_texture_id_cat = dpg.add_static_texture(width, height, img_data)
         
         # 计算图片水平和垂直居中位置
-        pos_x = max(0, (max_img_width - width) // 2)
-        pos_y = max(0, (max_img_height - height) // 2)  # 标题下方留出空间，然后垂直居中
+        pos_x = (max_img_width - width) // 2
+        pos_y = (max_img_height - height) // 2  # 标题下方留出空间，然后垂直居中
     
         # 确保右侧已有图片显示区域
         if not dpg.does_item_exist("image_display_area_cat"):
