@@ -84,7 +84,8 @@ with dpg.font_registry():
     import os
 
     # 检查字体文件是否存在
-    font_file = "./fonts/lmmonolt10-regular.otf"
+    # font_file = "./fonts/lmmonolt10-regular.otf"
+    font_file = "./fonts/calibrib.ttf"
 
     if os.path.exists(font_file):
         try:
