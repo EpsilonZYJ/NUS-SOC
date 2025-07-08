@@ -324,7 +324,7 @@ def load_and_display_image(image_path):
                 dpg.add_text(f"Size: {width}x{height}", tag="image_size_text")
                 dpg.add_text("Image Preview:", color=(255, 255, 0))
                 # 创建一个child_window来容纳图片，使其在滚动区域内居中
-                with dpg.child_window(width=max_img_width, height=max_img_height, tag="image_container"):
+                with dpg.child_window(width=max_img_width, height=max_img_height, tag="image_container", no_scroll_with_mouse=True):
                     dpg.add_image(loaded_texture_id, tag="displayed_image", pos=[pos_x, pos_y])
         else:
             # 更新现有图片和尺寸信息
@@ -352,10 +352,20 @@ def load_and_display_image(image_path):
         print(img_path)
         # 加载图片并创建纹理
         img = Image.open(img_path)
+
+        original_width, original_height = img.size
+        scale_x = max_img_width / original_width
+        scale_y = max_img_height / original_height
+        scale = min(scale_x, scale_y)  # 保持纵横比
+        
+        new_width = int(original_width * scale)
+        new_height = int(original_height * scale)
+
+        img =  img.resize((new_width, new_height), Image.Resampling.LANCZOS)
         
         # 调整图片大小以适应显示区域，保持纵横比
-        max_size = (max_img_width, max_img_height)  # 最大显示尺寸
-        img.thumbnail(max_size, Image.Resampling.LANCZOS)
+        # max_size = (max_img_width, max_img_height)  # 最大显示尺寸
+        # img.thumbnail(max_size, Image.Resampling.LANCZOS)
         
         # 转换为RGB模式（处理RGBA等其他模式）
         # if img.mode != "RGB":
@@ -389,7 +399,7 @@ def load_and_display_image(image_path):
                 # dpg.add_text(f"Size: {width}x{height}", tag="image_size_text")
                 dpg.add_text("Fun:", color=(255, 255, 0))
                 # 创建一个child_window来容纳图片，使其在滚动区域内居中
-                with dpg.child_window(width=max_img_width, height=max_img_height, tag="image_container_cat"):
+                with dpg.child_window(width=max_img_width, height=max_img_height, tag="image_container_cat", no_scroll_with_mouse=True):
                     dpg.add_image(loaded_texture_id_cat, tag="displayed_image_cat", pos=[pos_x, pos_y])
         else:
             # 更新现有图片和尺寸信息

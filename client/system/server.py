@@ -13,7 +13,7 @@ from queue import Queue
 classes = ["daisy", "dandelion", "roses", "sunflowers", "tulips"] # used for test
 cat_classes = ['pallas', 'persian', 'ragdoll', 'singapura', 'sphynx']  # used for cat classification
 cat_matching = ['cat_police','chiikawa','doraemon','garfield','hellokitty','hongmao','lingjiecat','puss_in_boots','luna','sensei','tom','yuumi']
-models = ['efficientnet', 'xception', 'test']  # available models for cat classification
+models = ['efficientnet', 'xception', 'test', 'efficientnet-bright', 'efficientnet-dark', 'insection']  # available models for cat classification
 
 model_dict = {
     "efficientnet": {
@@ -39,7 +39,19 @@ model_dict = {
         "input_size": 224,
         "scale": 1.0,  # scale factor for insection model
         "classes": cat_classes
-    }
+    },
+    "efficientnet-bright": {
+        "path": "model/cats_efficientnetb0-Noise-Brightness-V3-bright-05.keras",
+        "input_size": 224,
+        "scale": 255.0,  # scale factor for EfficientNet
+        "classes": cat_classes
+    },
+    "efficientnet-dark": {
+        "path": "model/cats_efficientnetb0-Noise-Brightness-V3-dark-05.keras",
+        "input_size": 224,
+        "scale": 255.0,  # scale factor for EfficientNet
+        "classes": cat_classes
+    },
 }
 cat_matching_model = "model/cats_matching.keras"  # model for cat matching
 
@@ -258,7 +270,10 @@ class MQTTInferenceServer:
             "prediction": result["prediction"],
             "score": result["score"],
             "index": result["index"],
-            "image_path": output_filename
+            "image_path": output_filename,
+            "cat_match_prediction": result["cat_match_prediction"],
+            "cat_match_score": result["cat_match_score"],
+            "cat_match_index": result["cat_match_index"]
         }
         self._save_image_info(image_info)
 
