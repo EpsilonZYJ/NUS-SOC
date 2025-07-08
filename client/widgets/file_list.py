@@ -492,8 +492,8 @@ def check_directory_changes():
     if current_hash != last_directory_state and last_directory_state != "":
         print(f"Directory changes detected in {current_directory}, refreshing...")
         refresh_file_explorer()
-        if cat_found_status_code != 31:
-            update_cat_found_status()
+    
+    update_cat_found_status()
     
     # 更新哈希值
     last_directory_state = current_hash
@@ -505,6 +505,8 @@ def setup_auto_refresh():
     # 计算初始目录哈希值
     last_directory_state = calculate_directory_hash(current_directory)
     
+    update_cat_found_status()
+
     # 使用DearPyGui的帧计数回调实现定期检查
     def frame_callback(sender, data):
         # 检查目录变化
@@ -584,3 +586,96 @@ def refresh_file_explorer():
     
     # 更新当前目录状态的哈希值
     last_directory_state = calculate_directory_hash(current_directory)
+
+def update_cat_found_status():
+    """更新猫咪发现状态"""
+    global cat_found_dict, cat_found_status_code
+    
+    # 重置状态
+    cat_found_status_code = 0
+    found_cats = set()
+    
+    # 读取结果文件
+    json_path = 'result_image.json'
+    if os.path.exists(json_path):
+        try:
+            with open(json_path, 'r') as f:
+                data = json.load(f)
+                
+            # 统计发现的猫咪
+            for item in data:
+                cat_prediction = item.get("prediction", "")
+                if cat_prediction in cat_found_dict:
+                    found_cats.add(cat_prediction)
+                    cat_found_status_code |= cat_found_dict[cat_prediction]
+                
+        except Exception as e:
+            print(f"Error reading cat status: {e}")
+    
+    # 更新界面显示
+    found_count = len(found_cats)
+    total_count = len(cat_found_dict)
+    
+    # 更新进度文本
+    if dpg.does_item_exist("cat_progress_text"):
+        progress_color = (100, 255, 100) if found_count == total_count else (255, 255, 0)
+        dpg.set_value("cat_progress_text", f"Progress: {found_count}/{total_count} cats found")
+        dpg.configure_item("cat_progress_text", color=progress_color)
+    
+    # 更新每个猫咪的状态
+    for cat_name in cat_found_dict.keys():
+        is_found = cat_name in found_cats
+        
+        # 更新图标
+        icon_tag = f"cat_icon_{cat_name}"
+        if dpg.does_item_exist(icon_tag):
+            if is_found:
+                # dpg.set_value(icon_tag, "✓")
+                dpg.configure_item(icon_tag, color=(100, 255, 100))
+            else:
+                # dpg.set_value(icon_tag, "✗")
+                dpg.configure_item(icon_tag, color=(255, 100, 100))
+        
+        # 更新状态文本
+        status_tag = f"cat_status_{cat_name}"
+        if dpg.does_item_exist(status_tag):
+            if is_found:
+                dpg.set_value(status_tag, "Found")
+                dpg.configure_item(status_tag, color=(100, 255, 100))
+            else:
+                dpg.set_value(status_tag, "Not Found")
+                dpg.configure_item(status_tag, color=(255, 100, 100))
+    
+    # 如果所有猫都找到了，显示庆祝消息
+    if found_count == total_count and total_count > 0:
+        if dpg.does_item_exist("status_text"):
+            dpg.set_value("status_text", "🎉 Congratulations! All cats have been discovered!")
+    
+    print(f"Cat status updated: {found_count}/{total_count} cats found")
+    return found_count, total_count
+
+def count_cat_discoveries():
+    """统计每只猫的发现情况，返回详细统计"""
+    found_cats = {}
+    
+    # 初始化所有猫咪为未发现
+    for cat_name in cat_found_dict.keys():
+        found_cats[cat_name] = False
+    
+    # 读取结果文件
+    json_path = 'result_image.json'
+    if os.path.exists(json_path):
+        try:
+            with open(json_path, 'r') as f:
+                data = json.load(f)
+                
+            # 统计发现的猫咪
+            for item in data:
+                cat_prediction = item.get("cat_match_prediction", "")
+                if cat_prediction in found_cats:
+                    found_cats[cat_prediction] = True
+                    
+        except Exception as e:
+            print(f"Error reading cat discoveries: {e}")
+    
+    return found_cats

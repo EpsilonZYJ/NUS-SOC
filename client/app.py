@@ -230,13 +230,20 @@ with dpg.window(label="Dear PyGui Example", tag="Primary Window", width=-1, heig
                 
             dpg.add_separator()
 
+            # 在app.py中修改Cat Found Status部分
             with dpg.collapsing_header(label="Cat Found Status", default_open=True):
-                with dpg.group(horizontal=True, tag="cat_found_status_group"):
+                # 添加总体统计信息
+                dpg.add_text("Progress: 0/12 cats found", tag="cat_progress_text", color=(255, 255, 0))
+                dpg.add_separator()
+                
+                # 为每个猫咪类型创建状态显示
+                with dpg.group(tag="cat_found_status_group"):
                     for cat_name in cat_found_dict.keys():
-                        if cat_found_dict[cat_name] & cat_found_status_code != 0:
-                            dpg.add_text(f"{cat_name.capitalize()} Found", color=(0, 255, 0), tag=f"{cat_name}_found_text")
-                        else:
-                            dpg.add_text(f"{cat_name.capitalize()} Not Found", color=(255, 0, 0), tag=f"{cat_name}_found_text")
+                        with dpg.group(horizontal=True, tag=f"cat_status_group_{cat_name}"):
+                            # dpg.add_text("✗", tag=f"cat_icon_{cat_name}", color=(255, 100, 100))
+                            dpg.add_text(f"{cat_name.replace('_', ' ').title()}", tag=f"cat_name_{cat_name}")
+                            dpg.add_text("Not Found", tag=f"cat_status_{cat_name}", color=(255, 100, 100))
+
 
             # 图片文件选择区域
             with dpg.collapsing_header(label="Image Selection", default_open=False, show=False):
