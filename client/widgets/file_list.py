@@ -493,7 +493,8 @@ def check_directory_changes():
         print(f"Directory changes detected in {current_directory}, refreshing...")
         refresh_file_explorer()
     
-    update_cat_found_status()
+    if cat_found_status_code == 31:
+        update_cat_found_status()
     
     # 更新哈希值
     last_directory_state = current_hash
@@ -505,7 +506,8 @@ def setup_auto_refresh():
     # 计算初始目录哈希值
     last_directory_state = calculate_directory_hash(current_directory)
     
-    update_cat_found_status()
+    if cat_found_status_code == 31:
+        update_cat_found_status()
 
     # 使用DearPyGui的帧计数回调实现定期检查
     def frame_callback(sender, data):
