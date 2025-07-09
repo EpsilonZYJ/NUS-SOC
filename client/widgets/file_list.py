@@ -399,9 +399,9 @@ def load_and_display_image(image_path):
         if not dpg.does_item_exist("image_display_area_cat"):
             with dpg.group(tag="image_display_area_cat", parent="right_panel"):
                 # dpg.add_text(f"Size: {width}x{height}", tag="image_size_text")
-                dpg.add_text("Fun:", color=(255, 255, 0))
+                dpg.add_text("Matching:", color=(255, 255, 0))
                 # 创建一个child_window来容纳图片，使其在滚动区域内居中
-                with dpg.child_window(width=max_img_width, height=max_img_height, tag="image_container_cat", no_scroll_with_mouse=True):
+                with dpg.child_window(width=max_img_width, height=max_img_height, tag="image_container_cat", horizontal_scrollbar=True, no_scroll_with_mouse=True):
                     dpg.add_image(loaded_texture_id_cat, tag="displayed_image_cat", pos=[pos_x, pos_y])
         else:
             # 更新现有图片和尺寸信息
@@ -414,11 +414,13 @@ def load_and_display_image(image_path):
         cat_prediction = item.get("cat_match_prediction", "No result")
         if not dpg.does_item_exist("prediction_result_cat"):
             with dpg.group(tag="prediction_result_cat", parent="right_panel"):
-                dpg.add_text(f"Prediction: {cat_prediction}", tag="prediction_result_text_cat")
-                dpg.add_text(f"Score: {cat_score:.2f}" if cat_score >= 0 else "Score: N/A", tag="prediction_score_text_cat")
+                dpg.add_text(f"Matching: {cat_prediction}", tag="prediction_result_text_cat")
+                dpg.add_text(f"Similarity: {cat_score:.2f}" if cat_score >= 0 else "Score: N/A", tag="prediction_score_text_cat")
+                dpg.add_text(f"Wow! Seems like you found the {cat_prediction}!", tag="cat_found_text")
         else:
-            dpg.set_value("prediction_result_text_cat", f"Prediction: {cat_prediction}")
-            dpg.set_value("prediction_score_text_cat", f"Score: {cat_score:.2f}" if cat_score >= 0 else "Score: N/A")
+            dpg.set_value("prediction_result_text_cat", f"Matching: {cat_prediction}")
+            dpg.set_value("prediction_score_text_cat", f"Similarity: {cat_score:.2f}" if cat_score >= 0 else "Score: N/A")
+            dpg.set_value("cat_found_text", f"Wow! Seems like you found the {cat_prediction}!")
     except Exception as e:
         print(f"Error displaying cat prediction result: {e}")
         # # 更新选中的图片（用于预测）
