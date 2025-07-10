@@ -1,0 +1,13 @@
+train: dataset/train/images
+val: dataset/valid/images
+test: dataset/test/images
+
+nc: 4
+names: ['Fall', 'Sitting', 'Standing', 'safety_equipment']
+
+roboflow:
+  workspace: testspace-u8f8z
+  project: humanpose2
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/testspace-u8f8z/humanpose2/dataset/1
