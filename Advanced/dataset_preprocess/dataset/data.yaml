@@ -1,6 +1,0 @@
-train: dataset/train/images
-val: dataset/valid/images
-test: dataset/test/images
-
-nc: 8
-names: ['Fall', 'Sitting', 'Standing', 'safety_equipment', 'child', 'violence', 'not trash', 'trash']
