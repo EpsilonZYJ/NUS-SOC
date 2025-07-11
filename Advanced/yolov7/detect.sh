@@ -1,0 +1,1 @@
+python detect.py --source 0 --weights runs/train/yolov714/weights/best.pt
