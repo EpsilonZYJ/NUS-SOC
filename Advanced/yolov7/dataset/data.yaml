@@ -1,5 +1,6 @@
 train: dataset/train/images
 val: dataset/valid/images
+test: dataset/test/images
 
-nc: 7
-names: ['fish', 'jellyfish', 'penguin', 'puffin', 'shark', 'starfish', 'stingray']
+nc: 8
+names: ['Fall', 'Sitting', 'Standing', 'safety_equipment', 'child', 'violence', 'not trash', 'trash']
